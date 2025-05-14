@@ -41,6 +41,15 @@ export default function LoginPage() {
     try {
       // Check for demo account
       if ((email === "admin@admin.com" || email === "admin") && password === "admin") {
+        // Store demo user info
+        localStorage.setItem(
+          "churchAppCurrentUser",
+          JSON.stringify({
+            nome: "Administrador",
+            email: "admin@admin.com",
+            comunidade: "matriz",
+          }),
+        )
         router.push("/dashboard")
         return
       }
@@ -77,17 +86,17 @@ export default function LoginPage() {
     <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-opacity-80">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="relative w-32 h-32 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full bg-amber-100 shadow-lg"></div>
+          <div className="relative w-40 h-40 mx-auto mb-4">
             <Image
-              src="/images/paroquia.jpg"
-              alt="Paróquia"
-              width={150}
-              height={150}
-              className="relative z-10 mx-auto rounded-full object-cover border-4 border-amber-200"
+              src="/images/logo.png"
+              alt="Paróquia São Roque"
+              width={160}
+              height={160}
+              className="mx-auto"
+              priority
             />
           </div>
-          <h1 className="text-3xl font-bold text-amber-900 font-cinzel">App da Paróquia</h1>
+          <h1 className="text-3xl font-bold text-amber-900 font-cinzel">Paróquia São Roque</h1>
           <div className="church-divider w-32 mx-auto my-2"></div>
           <p className="text-amber-800">Faça login para acessar</p>
         </div>

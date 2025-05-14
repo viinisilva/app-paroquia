@@ -1,6 +1,6 @@
 {
-  "name": "App da Paróquia",
-  "short_name": "Paróquia",
+  "name": "Paróquia São Roque",
+  "short_name": "São Roque",
   "description": "Aplicativo para gerenciamento de atividades paroquiais",
   "start_url": "/",
   "display": "standalone",

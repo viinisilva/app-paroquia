@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertCircle, ArrowLeft, Calendar, Clock, MapPin, User } from "lucide-react"
+import { AlertCircle, ArrowLeft, Calendar, Clock, MapPin, User, Check } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Image from "next/image"
 
 export default function CriarMissaPage() {
   const router = useRouter()
@@ -22,6 +23,7 @@ export default function CriarMissaPage() {
     descricao: "",
   })
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -47,11 +49,35 @@ export default function CriarMissaPage() {
       return
     }
 
-    // In a real app, you would send this data to your backend
-    console.log("Missa criada:", formData)
+    try {
+      // Get existing missas or initialize empty array
+      const existingMissas = JSON.parse(localStorage.getItem("churchAppMissas") || "[]")
 
-    // Redirect to dashboard after successful creation
-    router.push("/dashboard")
+      // Add new missa
+      existingMissas.push(formData)
+
+      // Sort by date and time
+      existingMissas.sort((a: any, b: any) => {
+        const dateA = new Date(`${a.data}T${a.horario}`)
+        const dateB = new Date(`${b.data}T${b.horario}`)
+        return dateA.getTime() - dateB.getTime()
+      })
+
+      // Save back to localStorage
+      localStorage.setItem("churchAppMissas", JSON.stringify(existingMissas))
+
+      // Show success message
+      setError("")
+      setSuccess(true)
+
+      // Redirect to dashboard after 2 seconds
+      setTimeout(() => {
+        router.push("/dashboard")
+      }, 2000)
+    } catch (err) {
+      console.error("Erro ao salvar missa:", err)
+      setError("Ocorreu um erro ao criar a missa. Por favor, tente novamente.")
+    }
   }
 
   return (
@@ -66,7 +92,18 @@ export default function CriarMissaPage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-semibold text-white font-cinzel">Criar Nova Missa</h1>
+          <div className="flex items-center">
+            <div className="relative w-8 h-8 mr-3">
+              <Image
+                src="/images/logo.png"
+                alt="Paróquia São Roque"
+                width={32}
+                height={32}
+                className="relative z-10 rounded-full object-cover"
+              />
+            </div>
+            <h1 className="text-xl font-semibold text-white font-cinzel">Criar Nova Missa</h1>
+          </div>
         </div>
       </header>
 
@@ -83,6 +120,13 @@ export default function CriarMissaPage() {
               <Alert variant="destructive" className="mb-4 bg-red-50 border-red-200">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {success && (
+              <Alert className="mb-4 bg-green-50 text-green-800 border-green-200">
+                <Check className="h-4 w-4 mr-2" />
+                <AlertDescription>Missa criada com sucesso! Redirecionando para o dashboard...</AlertDescription>
               </Alert>
             )}
 

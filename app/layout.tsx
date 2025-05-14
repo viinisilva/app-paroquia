@@ -8,14 +8,14 @@ import Script from "next/script"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "App da Paróquia",
+  title: "Paróquia São Roque",
   description: "Aplicativo para gerenciamento de atividades paroquiais",
   manifest: "/manifest.json",
   themeColor: "#8B4513",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "App da Paróquia",
+    title: "Paróquia São Roque",
   },
     generator: 'v0.dev'
 }
