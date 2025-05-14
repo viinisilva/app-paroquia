@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 36 70% 97%;
+    --foreground: 20 14.3% 4.1%;
+    --card: 36 70% 99%;
+    --card-foreground: 20 14.3% 4.1%;
+    --popover: 36 70% 99%;
+    --popover-foreground: 20 14.3% 4.1%;
+    --primary: 27 56% 50%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 220 60% 40%;
+    --secondary-foreground: 60 9.1% 97.8%;
+    --muted: 60 4.8% 95.9%;
+    --muted-foreground: 25 5.3% 44.7%;
+    --accent: 12 60% 45%;
+    --accent-foreground: 60 9.1% 97.8%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --ring: 27 56% 50%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image: url("/images/church-bg.png");
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Cinzel", serif;
+  }
+}
+
+.church-card {
+  background-color: rgba(255, 253, 250, 0.95);
+  box-shadow: 0 4px 20px rgba(139, 69, 19, 0.15);
+  border: 1px solid rgba(205, 164, 94, 0.3);
+  border-radius: var(--radius);
+}
+
+.church-header {
+  background: linear-gradient(to right, rgba(139, 69, 19, 0.9), rgba(205, 164, 94, 0.9));
+  color: white;
+  box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1);
+}
+
+.church-button {
+  background: linear-gradient(to right, #8b4513, #cd853f);
+  color: white;
+  border: none;
+  box-shadow: 0 2px 4px rgba(139, 69, 19, 0.2);
+  transition: all 0.3s ease;
+}
+
+.church-button:hover {
+  background: linear-gradient(to right, #7b3500, #b87333);
+  box-shadow: 0 4px 8px rgba(139, 69, 19, 0.3);
+}
+
+.church-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.church-table th {
+  background-color: rgba(139, 69, 19, 0.1);
+  color: #5d4037;
+  font-family: "Cinzel", serif;
+  font-weight: 600;
+}
+
+.church-table tr:nth-child(even) {
+  background-color: rgba(205, 164, 94, 0.05);
+}
+
+.church-table tr:hover {
+  background-color: rgba(205, 164, 94, 0.1);
+}
+
+.church-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(139, 69, 19, 0.5), transparent);
+  margin: 1.5rem 0;
+}
+
+.stained-glass-bg {
+  background-image: url("/images/stained-glass.png");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.stained-glass-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.85);
+  z-index: -1;
+}
+
+.cross-decoration {
+  position: relative;
+}
+
+.cross-decoration::before {
+  content: "✝";
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20px;
+  color: rgba(139, 69, 19, 0.7);
+}
+
+.church-card-header {
+  border-bottom: 1px solid rgba(205, 164, 94, 0.3);
+  position: relative;
+}
+
+.church-card-header::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(139, 69, 19, 0.5), transparent);
+}
