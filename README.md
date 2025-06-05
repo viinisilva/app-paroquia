@@ -1,48 +1,32 @@
-🙏 App Paróquia
+# 🙏 App Paróquia
+
 Aplicativo desenvolvido como projeto universitário com o objetivo de apoiar a organização e comunicação de uma igreja. A aplicação permite visualizar leituras religiosas, consultar a agenda de missas do mês e acessar informações sobre o coral da paróquia.
 
-📸 Funcionalidades
-📖 Leitura diária de textos litúrgicos
+## 📸 Funcionalidades
 
-📅 Visualização de missas disponíveis no mês
+- 📖 Leitura diária de textos litúrgicos  
+- 📅 Visualização de missas disponíveis no mês  
+- 🎶 Informações e organização do coral da igreja
 
-🎶 Informações e organização do coral da igreja
+## ⚙️ Tecnologias Utilizadas
 
-⚙️ Tecnologias Utilizadas
-Next.js
+- [Next.js](https://nextjs.org/)  
+- [TypeScript](https://www.typescriptlang.org/)  
+- [Tailwind CSS](https://tailwindcss.com/)  
+- [PNPM](https://pnpm.io/)  
+- Deploy via [Vercel](https://vercel.com/)
 
-TypeScript
+## 🚀 Como Rodar o Projeto
 
-Tailwind CSS
-
-PNPM
-
-Deploy via Vercel
-
-🚀 Como Rodar o Projeto
-Clone o repositório:
-
-bash
-Copiar
-Editar
+```bash
+# Clone o repositório
 git clone https://github.com/viinisilva/app-paroquia.git
-Instale as dependências:
 
-bash
-Copiar
-Editar
+# Acesse a pasta do projeto
+cd app-paroquia
+
+# Instale as dependências
 pnpm install
-Inicie o servidor de desenvolvimento:
 
-bash
-Copiar
-Editar
+# Inicie o servidor de desenvolvimento
 pnpm dev
-🌐 Acesso Online
-Acesse o app diretamente: https://app-paroquia.vercel.app
-
-📌 Status
-Projeto em desenvolvimento como parte de atividade acadêmica da UNIP.
-
-📄 Licença
-Este projeto está sob a licença MIT.
