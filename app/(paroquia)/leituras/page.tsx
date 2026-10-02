@@ -3,13 +3,12 @@ import { requireUser } from '@/lib/auth';
 import { getRecords } from '@/lib/records';
 import { today, readingLabels, formatDate } from '@/lib/dates';
 import { dateSchema } from '@/lib/validation';
-import { legacyReadings } from '@/data/legacy-readings';
 import { PageHeader, EmptyState } from '@/components/page-parts';
 import { Button } from '@/components/ui/button';
 export default async function ReadingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string; demo?: string }>;
+  searchParams: Promise<{ date?: string }>;
 }) {
   const user = await requireUser();
   const query = await searchParams;
@@ -30,8 +29,8 @@ export default async function ReadingsPage({
         href="/leituras/novo"
       />
       <div className="panel mb-6">
-        <form className="flex flex-wrap items-end gap-3">
-          <div>
+        <form className="grid items-end gap-3 sm:grid-cols-[minmax(0,16rem)_auto_auto]">
+          <div className="min-w-0">
             <label htmlFor="reading-date" className="mb-2 block text-sm font-medium">
               Data da leitura
             </label>
@@ -45,8 +44,13 @@ export default async function ReadingsPage({
               required
             />
           </div>
-          <Button type="submit">Consultar</Button>
-          <Link href="/leituras" className="text-link inline-flex min-h-11 items-center text-sm">
+          <Button type="submit" className="w-full sm:w-auto">
+            Consultar
+          </Button>
+          <Link
+            href="/leituras"
+            className="text-link inline-flex min-h-11 items-center justify-center text-sm sm:justify-start"
+          >
             Hoje
           </Link>
         </form>
@@ -61,42 +65,18 @@ export default async function ReadingsPage({
           </div>
         )}
       </div>
-      {query.demo === '1' ? (
-        <>
-          <div className="mb-6 rounded-xl border bg-accent p-5">
-            <h2 className="mb-2 text-lg">Arquivo demonstrativo de 2025</h2>
-            <p className="text-sm">
-              Conteúdo preservado do protótipo original, sem fonte editorial validada. As datas e
-              celebrações não representam o calendário litúrgico atual. Este arquivo serve apenas
-              para demonstração de leitura.
-            </p>
-            <Link href="/leituras" className="text-link mt-3 inline-block text-sm">
-              Voltar às leituras publicadas
-            </Link>
-          </div>
-          {legacyReadings.map((group) => (
-            <section key={group.data} className="mb-8">
-              <h2 className="mb-4 text-lg">
-                {group.titulo} • registro original {group.data}
-              </h2>
-              {group.leituras.map((reading) => (
-                <article className="panel mb-4" key={reading.nome}>
-                  <p className="eyebrow">Demonstração • {reading.nome}</p>
-                  <h3 className="mb-4 font-semibold">{reading.referencia}</h3>
-                  <p className="max-w-prose leading-8">{reading.texto}</p>
-                </article>
-              ))}
-            </section>
-          ))}
-        </>
-      ) : rows.length ? (
-        <div className="space-y-5">
+      {rows.length ? (
+        <div className="mx-auto max-w-4xl space-y-5">
           {rows.map((row) => (
-            <article className="panel" key={row.id}>
-              <p className="eyebrow">{readingLabels[row.type as keyof typeof readingLabels]}</p>
-              <h2 className="text-xl">{row.title}</h2>
+            <article className="rounded-xl border bg-card px-5 py-6 sm:px-8 sm:py-8" key={row.id}>
+              <p className="eyebrow mb-2">
+                {readingLabels[row.type as keyof typeof readingLabels]}
+              </p>
+              <h2 className="text-xl sm:text-2xl">{row.title}</h2>
               <p className="my-3 font-medium text-primary">{row.reference}</p>
-              <p className="max-w-prose whitespace-pre-wrap break-words leading-8">{row.content}</p>
+              <p className="max-w-prose whitespace-pre-wrap break-words text-[1.03rem] leading-8">
+                {row.content}
+              </p>
               <p className="mt-6 break-words text-xs text-muted-foreground">Fonte: {row.source}</p>
               {user.role === 'ADMIN' && (
                 <Link href={'/leituras/' + row.id} className="text-link mt-4 inline-block text-sm">
@@ -109,17 +89,11 @@ export default async function ReadingsPage({
       ) : (
         <EmptyState
           title="Leituras ainda não publicadas para esta data."
-          description="A administração publicará os textos após conferir uma fonte litúrgica confiável."
+          description="Consulte outra data ou volte mais tarde."
+          action={user.role === 'ADMIN' ? 'Nova leitura' : undefined}
+          href="/leituras/novo"
+          compact
         />
-      )}
-      {query.demo !== '1' && (
-        <p className="mt-8 text-sm text-muted-foreground">
-          Para conhecer o formato:{' '}
-          <Link className="text-link" href="/leituras?demo=1">
-            abrir arquivo demonstrativo do protótipo
-          </Link>
-          .
-        </p>
       )}
     </>
   );

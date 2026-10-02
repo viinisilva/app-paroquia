@@ -2,6 +2,9 @@ import { test, expect, type Page, type Request } from '@playwright/test';
 import { Pool } from 'pg';
 import { mkdir } from 'node:fs/promises';
 import { assertSafeTestDatabase } from './database-safety';
+
+test.setTimeout(360000);
+
 const origin = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 const dbURL = process.env.DATABASE_URL || '';
 test.beforeAll(() => {
@@ -21,6 +24,10 @@ async function fill(page: Page, values: Record<string, string>) {
   for (const [label, value] of Object.entries(values))
     await page.getByLabel(label, { exact: true }).fill(value);
 }
+async function waitForPage(page: Page) {
+  await expect(page.locator('h1')).toBeVisible();
+  await expect(page.getByText('Carregando informações...')).toHaveCount(0);
+}
 test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade', async ({
   browser,
   page,
@@ -28,16 +35,22 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
   const pool = new Pool({ connectionString: dbURL, max: 1 });
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await mkdir('artifacts', { recursive: true });
+  await mkdir('artifacts/final', { recursive: true });
   await page.goto('/missas');
   await expect(page).toHaveURL(/sessao=expirada/);
+  await page.goto('/');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.screenshot({ path: 'artifacts/final/login-desktop.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: 'artifacts/final/login-mobile.png', fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.getByRole('button', { name: 'Entrar', exact: true }).click();
   await expect(page.getByText('Informe um e-mail válido.')).toBeVisible();
   await login(page, process.env.SEED_ADMIN_EMAIL!, process.env.SEED_ADMIN_PASSWORD!);
   const dashboardStats = page.locator('section[aria-label="Resumo da paróquia"] .tabular-nums');
   await expect(dashboardStats).toHaveCount(4);
   const dashboardCounts = await dashboardStats.allTextContents();
-  await page.screenshot({ path: 'artifacts/dashboard-desktop.png', fullPage: true });
+  await page.screenshot({ path: 'artifacts/final/dashboard-admin-desktop.png', fullPage: true });
   await page.getByRole('link', { name: 'Nova missa', exact: true }).click();
   await fill(page, {
     Data: '2099-10-15',
@@ -105,9 +118,13 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
   await expect(page).toHaveURL(/\/eventos\/[a-f0-9-]{36}$/);
   const eventURL = page.url();
   await page.goto('/calendario');
-  await page.getByLabel('Ir para o mês').fill('2099-10');
+  const monthPicker = page.getByLabel('Ir para o mês');
+  await monthPicker.fill('2099-10');
+  await expect(page.getByRole('heading', { name: 'outubro 2099' })).toBeVisible();
   await page.getByRole('button', { name: /15 de outubro de 2099/ }).click();
   await expect(page.getByRole('heading', { name: 'Evento teste ' + suffix })).toBeVisible();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.screenshot({ path: 'artifacts/final/calendario-desktop.png', fullPage: true });
   await page.goto('/avisos/novo');
   await fill(page, {
     Título: 'Aviso teste ' + suffix,
@@ -167,8 +184,17 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
   expect(
     await memberPage.evaluate(() => Object.keys(localStorage).filter((k) => /churchApp/.test(k))),
   ).toEqual([]);
-  for (const width of [375, 430, 768, 1024, 1440]) {
-    await memberPage.setViewportSize({ width, height: 900 });
+  const viewports = [
+    { width: 375, height: 667 },
+    { width: 390, height: 844 },
+    { width: 430, height: 932 },
+    { width: 768, height: 1024 },
+    { width: 1024, height: 768 },
+    { width: 1440, height: 900 },
+    { width: 1920, height: 1080 },
+  ];
+  for (const viewport of viewports) {
+    await memberPage.setViewportSize(viewport);
     for (const route of [
       '/inicio',
       '/missas',
@@ -182,10 +208,10 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
       await expect(memberPage.locator('h1')).toBeVisible();
       expect(
         await memberPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
-        route + ' @ ' + width,
+        route + ' @ ' + viewport.width,
       ).toBe(true);
     }
-    await page.setViewportSize({ width, height: 900 });
+    await page.setViewportSize(viewport);
     for (const route of [
       '/dashboard',
       '/membros',
@@ -198,31 +224,48 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
       await expect(page.locator('h1')).toBeVisible();
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
-        route + ' @ ' + width,
+        route + ' @ ' + viewport.width,
       ).toBe(true);
     }
   }
-  await memberPage.setViewportSize({ width: 375, height: 812 });
+  await memberPage.setViewportSize({ width: 390, height: 844 });
   await memberPage.goto('/inicio');
-  await memberPage.screenshot({ path: 'artifacts/member-mobile.png', fullPage: true });
-  await memberPage.getByRole('button', { name: 'Abrir menu' }).click();
-  await expect(memberPage.getByRole('dialog')).toBeVisible();
-  await memberPage
-    .getByRole('dialog')
-    .getByRole('link', { name: 'Calendário', exact: true })
-    .click();
+  await waitForPage(memberPage);
+  await memberPage.screenshot({ path: 'artifacts/final/home-member-mobile.png', fullPage: true });
+  await expect(memberPage.getByRole('navigation', { name: 'Navegação móvel' })).toBeVisible();
+  await memberPage.goto('/missas');
+  await waitForPage(memberPage);
+  await memberPage.screenshot({ path: 'artifacts/final/missas-member-mobile.png', fullPage: true });
+  await memberPage.getByRole('link', { name: 'Agenda', exact: true }).click();
   await expect(memberPage).toHaveURL('/calendario');
+  await waitForPage(memberPage);
+  await memberPage.screenshot({ path: 'artifacts/final/calendario-mobile.png', fullPage: true });
+  await memberPage.getByRole('link', { name: 'Leituras', exact: true }).click();
+  await expect(memberPage).toHaveURL('/leituras');
+  await waitForPage(memberPage);
+  await memberPage.screenshot({ path: 'artifacts/final/leituras-mobile.png', fullPage: true });
+  await memberPage.getByRole('button', { name: 'Mais opções' }).click();
+  await expect(memberPage.getByRole('dialog')).toBeVisible();
+  await memberPage.getByRole('dialog').getByRole('link', { name: 'Eventos', exact: true }).click();
+  await expect(memberPage).toHaveURL('/eventos');
   await expect(memberPage.getByRole('dialog')).toHaveCount(0);
-  await memberPage.screenshot({ path: 'artifacts/calendar-mobile.png', fullPage: true });
-  await memberPage.goto('/leituras?demo=1');
-  await expect(
-    memberPage.getByRole('heading', { name: 'Arquivo demonstrativo de 2025' }),
-  ).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/dashboard');
+  await waitForPage(page);
+  await page.screenshot({ path: 'artifacts/final/dashboard-admin-mobile.png', fullPage: true });
+  await page.goto('/missas');
+  await waitForPage(page);
+  await page.screenshot({ path: 'artifacts/final/missas-admin-mobile.png', fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/dashboard');
+  await waitForPage(page);
+  await page.screenshot({ path: 'artifacts/final/dashboard-admin-desktop.png', fullPage: true });
   const cookies = await memberContext.cookies();
   const session = cookies.find((c) => c.name === 'paroquia_session')!;
   expect(session.httpOnly).toBe(true);
   expect(session.sameSite).toBe('Lax');
-  await memberPage.getByRole('button', { name: 'Sair da conta' }).click();
+  await memberPage.getByRole('button', { name: 'Mais opções' }).click();
+  await memberPage.getByRole('dialog').getByRole('button', { name: 'Sair da conta' }).click();
   await expect(memberPage).toHaveURL('/');
   await memberPage.goto('/perfil');
   await expect(memberPage).toHaveURL(/sessao=expirada/);
@@ -292,6 +335,8 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
   await expect(page.getByRole('heading', { name: 'Estamos aguardando sua conexão' })).toBeVisible();
   await page.context().setOffline(false);
   expect(errors).toEqual([]);
+  const adminLogout = await page.request.post('/api/auth/logout', { headers: { origin } });
+  expect(adminLogout.status()).toBe(200);
   await pool.end();
   await memberContext.close();
 });

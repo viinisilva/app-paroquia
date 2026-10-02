@@ -5,6 +5,10 @@
   :root {
     --background: 38 33% 97%;
     --foreground: 25 22% 18%;
+    --surface: 0 0% 100%;
+    --surface-subtle: 37 30% 95%;
+    --text-primary: 25 22% 18%;
+    --text-secondary: 25 10% 40%;
     --card: 0 0% 100%;
     --card-foreground: 25 22% 18%;
     --popover: 0 0% 100%;
@@ -22,8 +26,10 @@
     --border: 32 23% 85%;
     --input: 30 20% 74%;
     --ring: 33 51% 37%;
-    --radius: 0.75rem;
+    --radius: 0.875rem;
     --gold: 39 45% 47%;
+    --community: 177 38% 27%;
+    --mobile-nav-height: 4.75rem;
   }
   * {
     @apply border-border;
@@ -32,6 +38,7 @@
     @apply bg-background text-foreground;
     font-family: Inter, Arial, sans-serif;
     line-height: 1.6;
+    text-rendering: optimizeLegibility;
   }
   h1,
   h2,
@@ -55,8 +62,8 @@
     touch-action: manipulation;
   }
   :focus-visible {
-    outline: 3px solid hsl(var(--ring));
-    outline-offset: 3px;
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
   input,
   select,
@@ -70,10 +77,13 @@
   button {
     min-height: 44px;
   }
+  html {
+    scroll-padding-top: 5rem;
+  }
 }
 @layer components {
   .panel {
-    @apply rounded-xl border bg-card p-5 shadow-sm sm:p-7;
+    @apply rounded-xl border bg-card p-4 shadow-[0_1px_2px_rgba(54,39,29,0.05)] sm:p-5;
   }
   .eyebrow {
     @apply mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground;
@@ -85,26 +95,43 @@
     @apply flex min-h-11 w-full rounded-md border border-input bg-card px-3 py-2 text-base;
   }
   .section-title {
-    @apply mb-5 text-xl font-semibold;
+    @apply mb-4 text-lg font-semibold sm:text-xl;
   }
   .auth-layout {
     @apply min-h-screen lg:grid lg:grid-cols-2;
   }
   .auth-story {
-    @apply flex flex-col items-center justify-center gap-6 px-6 py-10 text-center text-primary-foreground lg:min-h-screen lg:p-16;
+    @apply flex flex-col items-center justify-center gap-3 px-5 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] text-center text-primary-foreground lg:min-h-screen lg:gap-6 lg:p-16;
     background: radial-gradient(ellipse at top, #6b503a, #30251e);
   }
   .auth-story h1 {
-    @apply text-4xl leading-tight lg:text-5xl;
+    @apply text-3xl leading-tight lg:text-5xl;
   }
   .auth-story .eyebrow {
     color: #e1c999;
   }
   .auth-panel {
-    @apply flex items-center justify-center px-6 py-12 lg:p-16;
+    @apply flex items-start justify-center px-5 py-7 sm:px-8 lg:items-center lg:p-16;
   }
   .record-grid {
-    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+    @apply grid gap-4 md:grid-cols-2 2xl:grid-cols-3;
+  }
+  .content-container {
+    @apply mx-auto w-full max-w-[80rem];
+  }
+  .interactive-card {
+    @apply transition-colors hover:border-primary/30 hover:bg-accent/20;
+  }
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  body:has([data-member-bottom-nav]) .pwa-install-prompt {
+    bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 0.75rem);
+  }
+  @media (min-width: 1024px) {
+    body:has([data-member-bottom-nav]) .pwa-install-prompt {
+      bottom: 1rem;
+    }
   }
 }
 @media (prefers-reduced-motion: reduce) {

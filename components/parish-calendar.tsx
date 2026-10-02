@@ -35,12 +35,18 @@ export function ParishCalendar({
     setMonth(value);
     setSelected(value + '-01');
   }
+  function selectMonth(value: string) {
+    if (/^\d{4}-\d{2}$/.test(value)) {
+      setMonth(value);
+      setSelected(value + '-01');
+    }
+  }
   return (
-    <div className="grid items-start gap-6 xl:grid-cols-[1.4fr_1fr]">
+    <div className="grid items-start gap-6 2xl:grid-cols-[1.35fr_1fr]">
       <section className="panel min-w-0 !p-3 sm:!p-6">
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
+        <div className="mb-4 flex items-center justify-between gap-2">
           <h2 className="text-lg capitalize">{format(first, 'MMMM yyyy', { locale: ptBR })}</h2>
-          <div className="flex gap-1">
+          <div className="flex shrink-0 gap-1">
             <Button
               variant="ghost"
               size="icon"
@@ -78,14 +84,10 @@ export function ParishCalendar({
           value={month}
           min="1900-01"
           max="2100-12"
-          onChange={(e) => {
-            if (/^\d{4}-\d{2}$/.test(e.target.value)) {
-              setMonth(e.target.value);
-              setSelected(e.target.value + '-01');
-            }
-          }}
+          onInput={(event) => selectMonth(event.currentTarget.value)}
+          onChange={(event) => selectMonth(event.currentTarget.value)}
         />
-        <div className="grid grid-cols-7 gap-1 text-center">
+        <div className="grid grid-cols-7 gap-0.5 text-center sm:gap-1">
           {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((d) => (
             <div className="py-2 text-xs font-medium text-muted-foreground" key={d}>
               {d}
@@ -105,9 +107,9 @@ export function ParishCalendar({
                 aria-label={formatDate(key) + ', ' + entries.length + ' atividade(s)'}
                 onClick={() => setSelected(key)}
                 className={cn(
-                  'flex min-h-14 min-w-0 flex-col items-center justify-center rounded-lg border border-transparent py-2 text-sm hover:bg-accent sm:min-h-20',
+                  'flex min-h-12 min-w-0 flex-col items-center justify-center rounded-lg border border-transparent py-1.5 text-sm hover:bg-accent sm:min-h-16 xl:min-h-20',
                   selected === key
-                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    ? 'bg-primary text-primary-foreground shadow-[0_0_0_2px_hsl(var(--background)),0_0_0_4px_hsl(var(--ring))] hover:bg-primary/90'
                     : key === initialDate
                       ? 'border-primary'
                       : '',
@@ -117,6 +119,7 @@ export function ParishCalendar({
                 <span className="mt-1 flex h-2 gap-1">
                   {entries.some((e) => e.kind === 'missas') && (
                     <span
+                      aria-hidden
                       className={cn(
                         'h-1.5 w-1.5 rounded-full',
                         selected === key ? 'bg-amber-200' : 'bg-primary',
@@ -125,8 +128,9 @@ export function ParishCalendar({
                   )}
                   {entries.some((e) => e.kind === 'eventos') && (
                     <span
+                      aria-hidden
                       className={cn(
-                        'h-1.5 w-1.5 rounded-full',
+                        'h-1.5 w-1.5 rounded-sm',
                         selected === key ? 'bg-teal-200' : 'bg-teal-700',
                       )}
                     />
@@ -136,7 +140,7 @@ export function ParishCalendar({
             );
           })}
         </div>
-        <div className="mt-5 flex flex-wrap gap-5 border-t pt-4 text-xs">
+        <div className="mt-5 flex flex-wrap gap-5 border-t pt-4 text-xs" aria-label="Legenda">
           <span className="flex items-center gap-2">
             <Church aria-hidden className="h-4 w-4 text-primary" />
             Missas

@@ -30,7 +30,7 @@ export async function ResourceListPage({ resource }: { resource: Resource }) {
         action={user.role === 'ADMIN' ? config.createLabel : undefined}
         href={'/' + resource + '/' + (resource === 'missas' ? 'nova' : 'novo')}
       />
-      <RecordList resource={resource} rows={rows} />
+      <RecordList resource={resource} rows={rows} canManage={user.role === 'ADMIN'} />
     </>
   );
 }
@@ -91,7 +91,9 @@ export async function ResourceDetailPage({ resource, id }: { resource: Resource;
                           : 'Membro'
                         : f.name === 'type'
                           ? readingLabels[row.type as keyof typeof readingLabels]
-                          : row[f.name] || 'Não informado'}
+                          : f.name === 'phone' && (!row[f.name] || /^0+$/.test(row[f.name]))
+                            ? 'Telefone não informado'
+                            : row[f.name] || 'Não informado'}
                 </dd>
               </div>
             ))}

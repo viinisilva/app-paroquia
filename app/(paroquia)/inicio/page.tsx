@@ -36,24 +36,28 @@ export default async function Home({
         title={'Olá, ' + user.name.split(' ')[0]}
         description="Que bom caminhar juntos. Veja o que acontece na nossa comunidade."
       />
-      <div className="mb-8 grid gap-5 lg:grid-cols-5">
-        <section className="relative overflow-hidden rounded-xl bg-primary p-7 text-primary-foreground lg:col-span-3">
-          <Church aria-hidden className="mb-6 h-8 w-8 text-amber-200" />
-          <p className="mb-3 text-xs uppercase tracking-[0.2em] text-amber-100">
-            Nossa próxima celebração
-          </p>
-          <h2 className="mb-4 text-3xl">
+      <div className="mb-9 grid gap-4 lg:grid-cols-5">
+        <section className="relative overflow-hidden rounded-xl bg-primary p-5 text-primary-foreground sm:p-7 lg:col-span-3">
+          <div className="mb-5 flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10">
+              <Church aria-hidden className="h-6 w-6 text-amber-200" />
+            </span>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-100">
+              Próxima missa
+            </p>
+          </div>
+          <h2 className="mb-4 text-2xl sm:text-3xl">
             {nextMass ? 'Vamos celebrar juntos' : 'A comunidade nos reúne'}
           </h2>
           {nextMass ? (
             <>
-              <p className="text-lg">
+              <p className="text-lg font-semibold">
                 {formatDate(nextMass.date)} • {nextMass.time.slice(0, 5)}
               </p>
               <p className="mt-2 break-words">{nextMass.location}</p>
-              <p className="text-sm opacity-80">{nextMass.celebrant}</p>
+              <p className="text-sm text-primary-foreground/75">{nextMass.celebrant}</p>
               <Link
-                className="mt-6 inline-flex min-h-11 items-center gap-2 font-medium underline underline-offset-4"
+                className="mt-5 inline-flex min-h-11 items-center gap-2 font-medium underline underline-offset-4"
                 href={'/missas/' + nextMass.id}
               >
                 Ver celebração
@@ -61,35 +65,87 @@ export default async function Home({
               </Link>
             </>
           ) : (
-            <p>Nenhuma missa agendada no momento. Acompanhe as próximas atualizações.</p>
+            <p className="max-w-md text-primary-foreground/80">
+              Nenhuma missa agendada no momento. Acompanhe as próximas atualizações.
+            </p>
           )}
         </section>
         <section className="panel lg:col-span-2">
-          <BookOpen aria-hidden className="mb-5 h-7 w-7 text-primary" />
-          <p className="eyebrow">Palavra que ilumina</p>
+          <div className="mb-4 flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
+              <BookOpen aria-hidden className="h-5 w-5 text-primary" />
+            </span>
+            <p className="eyebrow !mb-0">Palavra do dia</p>
+          </div>
           <h2 className="mb-3 text-xl">Leitura em destaque</h2>
           {reading ? (
             <>
               <p className="font-medium">{reading.reference}</p>
-              <p className="mt-3 line-clamp-3 text-sm text-muted-foreground">{reading.content}</p>
+              <p className="mt-3 line-clamp-4 text-sm leading-6 text-muted-foreground">
+                {reading.content}
+              </p>
             </>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm leading-6 text-muted-foreground">
               As leituras de hoje ainda não foram publicadas. Consulte as datas disponíveis.
             </p>
           )}
-          <Link href="/leituras" className="text-link mt-6 inline-flex min-h-11 items-center">
-            Acompanhar as leituras
+          <Link href="/leituras" className="text-link mt-5 inline-flex min-h-11 items-center">
+            Abrir leituras
           </Link>
+        </section>
+      </div>
+      <div className="grid gap-8 xl:grid-cols-2">
+        <section>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="section-title !mb-0">Próximos eventos</h2>
+            <Link href="/eventos" className="text-link text-sm">
+              Ver todos
+            </Link>
+          </div>
+          <div className="space-y-4">
+            {nextEvents.length ? (
+              nextEvents.map((row) => <RecordCard key={row.id} resource="eventos" row={row} />)
+            ) : (
+              <EmptyState
+                title="Nenhum evento programado"
+                description="Novos encontros aparecerão aqui quando forem publicados."
+                icon={CalendarHeart}
+                compact
+              />
+            )}
+          </div>
+        </section>
+        <section>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="section-title !mb-0">Avisos recentes</h2>
+            <Link href="/avisos" className="text-link text-sm">
+              Ver todos
+            </Link>
+          </div>
+          <div className="space-y-4">
+            {notices.length ? (
+              notices
+                .slice(0, 2)
+                .map((row) => <RecordCard key={row.id} resource="avisos" row={row} />)
+            ) : (
+              <EmptyState
+                title="Nenhum aviso publicado"
+                description="As novidades da comunidade aparecerão aqui."
+                icon={Bell}
+                compact
+              />
+            )}
+          </div>
         </section>
       </div>
       <nav
         aria-label="Atalhos da comunidade"
-        className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
+        className="mt-9 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
       >
         {[
           { href: '/missas', label: 'Missas', icon: Church },
-          { href: '/calendario', label: 'Calendário', icon: CalendarDays },
+          { href: '/calendario', label: 'Agenda', icon: CalendarDays },
           { href: '/leituras', label: 'Leituras', icon: BookOpen },
           { href: '/eventos', label: 'Eventos', icon: CalendarHeart },
           { href: '/avisos', label: 'Avisos', icon: Bell },
@@ -97,37 +153,13 @@ export default async function Home({
           <Link
             key={href}
             href={href}
-            className="flex min-h-16 items-center gap-3 rounded-xl border bg-card p-4 text-sm font-medium hover:bg-accent"
+            className="interactive-card flex min-h-16 items-center gap-3 rounded-xl border bg-card p-4 text-sm font-medium"
           >
             <Icon aria-hidden className="h-5 w-5 text-primary" />
             {label}
           </Link>
         ))}
       </nav>
-      <div className="grid gap-8 xl:grid-cols-2">
-        <section>
-          <h2 className="section-title">Próximos eventos</h2>
-          <div className="space-y-4">
-            {nextEvents.length ? (
-              nextEvents.map((row) => <RecordCard key={row.id} resource="eventos" row={row} />)
-            ) : (
-              <EmptyState title="Nenhum evento encontrado." />
-            )}
-          </div>
-        </section>
-        <section>
-          <h2 className="section-title">Avisos da comunidade</h2>
-          <div className="space-y-4">
-            {notices.length ? (
-              notices
-                .slice(0, 2)
-                .map((row) => <RecordCard key={row.id} resource="avisos" row={row} />)
-            ) : (
-              <EmptyState title="Nenhum aviso publicado." />
-            )}
-          </div>
-        </section>
-      </div>
     </>
   );
 }

@@ -9,6 +9,8 @@ export default defineConfig({
   expect: { timeout: 15000 },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    actionTimeout: 15000,
+    navigationTimeout: 30000,
     headless: true,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',

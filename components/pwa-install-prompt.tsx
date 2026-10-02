@@ -6,12 +6,22 @@ interface InstallEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
+const DISMISS_KEY = 'paroquia-install-prompt-dismissed-until';
+const DISMISS_DAYS = 14;
+
+function postponePrompt() {
+  const until = Date.now() + DISMISS_DAYS * 24 * 60 * 60 * 1000;
+  localStorage.setItem(DISMISS_KEY, String(until));
+}
+
 export default function PWAInstallPrompt() {
   const [prompt, setPrompt] = useState<InstallEvent | null>(null);
   useEffect(() => {
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
     const handler = (e: Event) => {
       e.preventDefault();
+      const dismissedUntil = Number(localStorage.getItem(DISMISS_KEY) || 0);
+      if (dismissedUntil > Date.now()) return;
       setPrompt(e as InstallEvent);
     };
     const installed = () => setPrompt(null);
@@ -26,7 +36,7 @@ export default function PWAInstallPrompt() {
   return (
     <aside
       aria-label="Instalar aplicativo"
-      className="fixed bottom-4 left-4 right-4 z-40 mx-auto max-w-md rounded-xl border bg-card p-4 shadow-lg"
+      className="pwa-install-prompt fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] left-3 right-3 z-50 mx-auto max-w-md rounded-xl border bg-card p-4 shadow-lg"
     >
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
@@ -39,7 +49,8 @@ export default function PWAInstallPrompt() {
             onClick={async () => {
               try {
                 await prompt.prompt();
-                await prompt.userChoice;
+                const choice = await prompt.userChoice;
+                if (choice.outcome === 'dismissed') postponePrompt();
               } finally {
                 setPrompt(null);
               }
@@ -53,7 +64,10 @@ export default function PWAInstallPrompt() {
           aria-label="Fechar sugestão de instalação"
           variant="ghost"
           size="icon"
-          onClick={() => setPrompt(null)}
+          onClick={() => {
+            postponePrompt();
+            setPrompt(null);
+          }}
         >
           <X />
         </Button>

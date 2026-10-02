@@ -20,25 +20,27 @@ export default async function Login({
           width={160}
           height={160}
           priority
+          sizes="(max-width: 1023px) 88px, 160px"
+          className="h-[5.5rem] w-[5.5rem] rounded-lg bg-white object-contain p-1 lg:h-40 lg:w-40"
         />
-        <p className="eyebrow">Fé • Comunidade • Serviço</p>
-        <h1>
-          Paróquia
-          <br />
-          São Roque
+        <p className="eyebrow !mb-0">Fé • Comunidade • Serviço</p>
+        <h1 className="whitespace-nowrap lg:whitespace-normal">
+          Paróquia <span className="lg:block">São Roque</span>
         </h1>
-        <p>
+        <p className="hidden lg:block">
           Um lugar de encontro.
           <br />
           Uma comunidade que caminha unida.
         </p>
-        <span className="text-sm opacity-70">Nossa vida paroquial, mais próxima de você.</span>
+        <span className="hidden text-sm opacity-70 lg:inline">
+          Nossa vida paroquial, mais próxima de você.
+        </span>
       </section>
       <section className="auth-panel">
         <div className="w-full max-w-md">
-          <p className="eyebrow">Seja bem-vindo</p>
-          <h2 className="mb-2 text-3xl">Que bom ter você aqui.</h2>
-          <p className="mb-8 text-muted-foreground">
+          <p className="eyebrow mb-2">Seja bem-vindo</p>
+          <h2 className="mb-2 text-2xl sm:text-3xl">Que bom ter você aqui.</h2>
+          <p className="mb-6 text-sm text-muted-foreground sm:mb-8 sm:text-base">
             Entre para acompanhar a vida da nossa comunidade.
           </p>
           {sessao && (
@@ -53,8 +55,8 @@ export default async function Login({
               Cadastre-se
             </Link>
           </p>
-          <p className="mt-10 text-xs text-muted-foreground">
-            Projeto universitário de extensão • Paróquia São Roque
+          <p className="mt-8 text-xs text-muted-foreground lg:mt-10">
+            Paróquia São Roque • Fé, comunidade e serviço
           </p>
         </div>
       </section>

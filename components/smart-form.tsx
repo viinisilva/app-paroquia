@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -35,6 +35,8 @@ export function SmartForm({
 }) {
   const router = useRouter();
   const [error, setError] = useState('');
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
   const {
     register,
     handleSubmit,
@@ -100,6 +102,9 @@ export function SmartForm({
             <Input
               id={field.name}
               type={field.type || 'text'}
+              inputMode={
+                field.type === 'tel' ? 'tel' : field.type === 'email' ? 'email' : undefined
+              }
               autoComplete={
                 field.type === 'password'
                   ? field.name === 'confirmPassword' || submitLabel !== 'Entrar'
@@ -129,10 +134,10 @@ export function SmartForm({
           </div>
         </div>
       ))}
-      <div className="flex flex-wrap gap-3 border-t pt-5">
-        <Button type="submit" disabled={isSubmitting}>
+      <div className="grid grid-cols-1 gap-3 border-t pt-5 sm:flex sm:flex-wrap">
+        <Button type="submit" disabled={!hydrated || isSubmitting} className="w-full sm:w-auto">
           {isSubmitting && <Loader2 aria-hidden className="animate-spin" />}
-          {isSubmitting ? 'Aguarde…' : submitLabel}
+          {!hydrated ? 'Preparando…' : isSubmitting ? 'Aguarde…' : submitLabel}
         </Button>
         {cancelHref && (
           <Button variant="outline" asChild>

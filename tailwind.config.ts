@@ -12,6 +12,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        surface: {
+          DEFAULT: 'hsl(var(--surface))',
+          subtle: 'hsl(var(--surface-subtle))',
+        },
+        'text-primary': 'hsl(var(--text-primary))',
+        'text-secondary': 'hsl(var(--text-secondary))',
+        gold: 'hsl(var(--gold))',
+        community: 'hsl(var(--community))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

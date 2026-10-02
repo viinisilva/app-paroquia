@@ -11,7 +11,7 @@ import { RecordCard } from '@/components/record-card';
 export default async function Dashboard() {
   const user = await requireAdmin();
   const database = db();
-  const [members, massCount, eventCount, noticeCount, rows] = await Promise.all([
+  const [members, massCount, eventCount, noticeCount, massRows, eventRows] = await Promise.all([
     database.select({ value: count() }).from(users),
     database
       .select({ value: count() })
@@ -25,8 +25,10 @@ export default async function Dashboard() {
     database.select({ value: count() }).from(events),
     database.select({ value: count() }).from(notices).where(lte(notices.publishedAt, today())),
     getRecords('missas'),
+    getRecords('eventos'),
   ]);
-  const upcoming = rows.filter(isUpcoming).slice(0, 3);
+  const upcoming = massRows.filter(isUpcoming).slice(0, 3);
+  const upcomingEvents = eventRows.filter(isUpcoming).slice(0, 3);
   const stats = [
     { label: 'Membros cadastrados', value: members[0].value, icon: Users, href: '/membros' },
     { label: 'Próximas missas', value: massCount[0].value, icon: Church, href: '/missas' },
@@ -45,26 +47,26 @@ export default async function Dashboard() {
         description="Um olhar sobre a comunidade. Organize a agenda e mantenha todos por perto."
       />
       <section
-        className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+        className="mb-7 grid grid-cols-2 gap-3 lg:grid-cols-4"
         aria-label="Resumo da paróquia"
       >
         {stats.map(({ label, value, icon: Icon, href }) => (
-          <Link href={href} key={href} className="panel group">
-            <div className="mb-5 flex items-center justify-between">
+          <Link href={href} key={href} className="panel interactive-card group min-h-36">
+            <div className="mb-3 flex items-center justify-between">
               <Icon aria-hidden className="h-5 w-5 text-primary" />
               <ArrowRight
                 aria-hidden
                 className="h-4 w-4 text-muted-foreground group-hover:text-primary"
               />
             </div>
-            <p className="text-3xl font-semibold tabular-nums">{value}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{label}</p>
+            <p className="text-3xl font-semibold leading-none tabular-nums sm:text-4xl">{value}</p>
+            <p className="mt-2 text-xs leading-5 text-muted-foreground sm:text-sm">{label}</p>
           </Link>
         ))}
       </section>
-      <section className="mb-10 rounded-xl border bg-accent/50 p-5">
-        <h2 className="mb-4 text-lg">Ações rápidas</h2>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="mb-9 rounded-xl border bg-accent/40 p-4 sm:p-5">
+        <h2 className="mb-3 text-lg">Ações rápidas</h2>
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           {[
             ['Nova missa', '/missas/nova'],
             ['Novo membro', '/membros/novo'],
@@ -74,7 +76,7 @@ export default async function Dashboard() {
             <Link
               key={href}
               href={href}
-              className="flex min-h-12 items-center gap-3 rounded-lg border bg-card px-4 py-3 text-sm font-medium hover:bg-background"
+              className="flex min-h-12 items-center gap-2 rounded-lg border bg-card px-3 py-3 text-sm font-medium hover:bg-background sm:gap-3 sm:px-4"
             >
               <Plus aria-hidden className="h-4 w-4" />
               {label}
@@ -82,23 +84,56 @@ export default async function Dashboard() {
           ))}
         </div>
       </section>
-      <section>
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-xl">Próximas missas</h2>
-          <Link className="text-link text-sm" href="/missas">
-            Ver todas
-          </Link>
-        </div>
-        {upcoming.length ? (
-          <div className="record-grid">
-            {upcoming.map((row) => (
-              <RecordCard key={row.id} resource="missas" row={row} />
-            ))}
+      <div className="grid items-start gap-9 2xl:grid-cols-2">
+        <section>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl">Próximas missas</h2>
+            <Link className="text-link text-sm" href="/missas">
+              Ver todas
+            </Link>
           </div>
-        ) : (
-          <EmptyState title="Nenhuma missa agendada." />
-        )}
-      </section>
+          {upcoming.length ? (
+            <div className="space-y-4">
+              {upcoming.map((row) => (
+                <RecordCard key={row.id} resource="missas" row={row} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="Nenhuma missa agendada"
+              description="Comece cadastrando a próxima celebração da paróquia."
+              action="Cadastrar missa"
+              href="/missas/nova"
+              icon={Church}
+              compact
+            />
+          )}
+        </section>
+        <section>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl">Próximos acontecimentos</h2>
+            <Link className="text-link text-sm" href="/eventos">
+              Ver agenda
+            </Link>
+          </div>
+          {upcomingEvents.length ? (
+            <div className="space-y-4">
+              {upcomingEvents.map((row) => (
+                <RecordCard key={row.id} resource="eventos" row={row} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="Nenhum evento programado"
+              description="Adicione encontros e atividades da comunidade."
+              action="Criar evento"
+              href="/eventos/novo"
+              icon={CalendarHeart}
+              compact
+            />
+          )}
+        </section>
+      </div>
     </>
   );
 }
