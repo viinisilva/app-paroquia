@@ -77,6 +77,8 @@ Copie `.env.example` para `.env.local` e preencha:
 ```dotenv
 DATABASE_URL=postgresql://USER:PASSWORD@HOST-pooler.neon.tech/neondb?sslmode=verify-full
 APP_URL=http://localhost:3000
+# Opcional, somente para testes E2E contra um Preview:
+PLAYWRIGHT_BASE_URL=
 SEED_ADMIN_NAME=Administrador
 SEED_ADMIN_EMAIL=seu-email@exemplo.com
 SEED_ADMIN_PASSWORD=uma-senha-forte-com-10-ou-mais-caracteres
@@ -85,6 +87,7 @@ SEED_DEMO=false
 
 - Use a URL de conexão **pooled** do Neon em `DATABASE_URL`. Troque `sslmode=require` da URL copiada por `sslmode=verify-full` para manter a verificação completa explícita no driver PostgreSQL.
 - Em produção, `APP_URL` deve ser a URL HTTPS canônica do site.
+- `PLAYWRIGHT_BASE_URL` não é variável de runtime da aplicação. Use-a apenas ao executar Playwright contra um Preview remoto.
 - `SEED_*` é usado apenas pelo comando de seed executado manualmente; não é necessário no runtime da Vercel.
 - Nunca versione `.env.local` ou segredos.
 

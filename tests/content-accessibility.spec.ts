@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { Pool } from 'pg';
 import { today } from '../lib/dates';
 import { assertSafeTestDatabase } from './database-safety';
-const origin = 'http://localhost:3000';
+const origin = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 test('cadastro pela interface, avisos agendados, leituras e acessibilidade', async ({
   page,
   browser,

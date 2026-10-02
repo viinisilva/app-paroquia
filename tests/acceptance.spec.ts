@@ -2,7 +2,7 @@ import { test, expect, type Page, type Request } from '@playwright/test';
 import { Pool } from 'pg';
 import { mkdir } from 'node:fs/promises';
 import { assertSafeTestDatabase } from './database-safety';
-const origin = 'http://localhost:3000';
+const origin = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 const dbURL = process.env.DATABASE_URL || '';
 test.beforeAll(() => {
   assertSafeTestDatabase(dbURL);
