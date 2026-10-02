@@ -83,7 +83,7 @@
 }
 @layer components {
   .panel {
-    @apply rounded-xl border bg-card p-4 shadow-[0_1px_2px_rgba(54,39,29,0.05)] sm:p-5;
+    @apply rounded-xl border bg-card p-3.5 shadow-[0_1px_2px_rgba(54,39,29,0.05)] sm:p-5;
   }
   .eyebrow {
     @apply mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground;
@@ -101,20 +101,20 @@
     @apply min-h-screen lg:grid lg:grid-cols-2;
   }
   .auth-story {
-    @apply flex flex-col items-center justify-center gap-3 px-5 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] text-center text-primary-foreground lg:min-h-screen lg:gap-6 lg:p-16;
+    @apply flex flex-col items-center justify-center gap-2 px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] text-center text-primary-foreground sm:gap-3 sm:pb-6 sm:pt-[calc(1.25rem+env(safe-area-inset-top))] lg:min-h-screen lg:gap-6 lg:p-16;
     background: radial-gradient(ellipse at top, #6b503a, #30251e);
   }
   .auth-story h1 {
-    @apply text-3xl leading-tight lg:text-5xl;
+    @apply text-[1.75rem] leading-tight sm:text-3xl lg:text-5xl;
   }
   .auth-story .eyebrow {
     color: #e1c999;
   }
   .auth-panel {
-    @apply flex items-start justify-center px-5 py-7 sm:px-8 lg:items-center lg:p-16;
+    @apply flex items-start justify-center px-5 py-5 sm:px-8 sm:py-7 lg:items-center lg:p-16;
   }
   .record-grid {
-    @apply grid gap-4 md:grid-cols-2 2xl:grid-cols-3;
+    @apply grid gap-3 sm:gap-4 md:grid-cols-2 2xl:grid-cols-3;
   }
   .content-container {
     @apply mx-auto w-full max-w-[80rem];

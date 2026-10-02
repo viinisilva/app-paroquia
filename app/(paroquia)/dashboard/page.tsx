@@ -43,30 +43,38 @@ export default async function Dashboard() {
   return (
     <>
       <PageHeader
-        title={'Olá, ' + user.name.split(' ')[0]}
-        description="Um olhar sobre a comunidade. Organize a agenda e mantenha todos por perto."
+        title="Visão Geral"
+        description={`Olá, ${user.name.split(' ')[0]}. Organize a agenda e mantenha todos por perto.`}
       />
       <section
-        className="mb-7 grid grid-cols-2 gap-3 lg:grid-cols-4"
+        className="mb-6 grid grid-cols-2 gap-3 sm:mb-7 lg:grid-cols-4"
         aria-label="Resumo da paróquia"
       >
         {stats.map(({ label, value, icon: Icon, href }) => (
-          <Link href={href} key={href} className="panel interactive-card group min-h-36">
-            <div className="mb-3 flex items-center justify-between">
+          <Link
+            href={href}
+            key={href}
+            className="panel interactive-card group min-h-32 sm:min-h-36"
+          >
+            <div className="mb-2 flex items-center justify-between sm:mb-3">
               <Icon aria-hidden className="h-5 w-5 text-primary" />
               <ArrowRight
                 aria-hidden
                 className="h-4 w-4 text-muted-foreground group-hover:text-primary"
               />
             </div>
-            <p className="text-3xl font-semibold leading-none tabular-nums sm:text-4xl">{value}</p>
-            <p className="mt-2 text-xs leading-5 text-muted-foreground sm:text-sm">{label}</p>
+            <p className="text-[1.7rem] font-semibold leading-none tabular-nums sm:text-4xl">
+              {value}
+            </p>
+            <p className="mt-1.5 text-xs leading-5 text-muted-foreground sm:mt-2 sm:text-sm">
+              {label}
+            </p>
           </Link>
         ))}
       </section>
-      <section className="mb-9 rounded-xl border bg-accent/40 p-4 sm:p-5">
-        <h2 className="mb-3 text-lg">Ações rápidas</h2>
-        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+      <section className="mb-7 rounded-xl border bg-accent/40 p-3.5 sm:mb-9 sm:p-5">
+        <h2 className="mb-2 text-base sm:mb-3 sm:text-lg">Ações rápidas</h2>
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 xl:grid-cols-4">
           {[
             ['Nova missa', '/missas/nova'],
             ['Novo membro', '/membros/novo'],
@@ -76,7 +84,7 @@ export default async function Dashboard() {
             <Link
               key={href}
               href={href}
-              className="flex min-h-12 items-center gap-2 rounded-lg border bg-card px-3 py-3 text-sm font-medium hover:bg-background sm:gap-3 sm:px-4"
+              className="flex min-h-11 items-center gap-2 rounded-lg border bg-card px-3 py-2 text-sm font-medium hover:bg-background sm:min-h-12 sm:gap-3 sm:px-4 sm:py-3"
             >
               <Plus aria-hidden className="h-4 w-4" />
               {label}
@@ -84,7 +92,7 @@ export default async function Dashboard() {
           ))}
         </div>
       </section>
-      <div className="grid items-start gap-9 2xl:grid-cols-2">
+      <div className="grid items-start gap-7 sm:gap-9 2xl:grid-cols-2">
         <section>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-xl">Próximas missas</h2>
@@ -102,8 +110,6 @@ export default async function Dashboard() {
             <EmptyState
               title="Nenhuma missa agendada"
               description="Comece cadastrando a próxima celebração da paróquia."
-              action="Cadastrar missa"
-              href="/missas/nova"
               icon={Church}
               compact
             />
@@ -126,8 +132,6 @@ export default async function Dashboard() {
             <EmptyState
               title="Nenhum evento programado"
               description="Adicione encontros e atividades da comunidade."
-              action="Criar evento"
-              href="/eventos/novo"
               icon={CalendarHeart}
               compact
             />

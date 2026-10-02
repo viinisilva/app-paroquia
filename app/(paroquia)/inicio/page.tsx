@@ -36,9 +36,9 @@ export default async function Home({
         title={'Olá, ' + user.name.split(' ')[0]}
         description="Que bom caminhar juntos. Veja o que acontece na nossa comunidade."
       />
-      <div className="mb-9 grid gap-4 lg:grid-cols-5">
-        <section className="relative overflow-hidden rounded-xl bg-primary p-5 text-primary-foreground sm:p-7 lg:col-span-3">
-          <div className="mb-5 flex items-center gap-3">
+      <div className="mb-7 grid gap-3 sm:mb-9 sm:gap-4 lg:grid-cols-5">
+        <section className="relative overflow-hidden rounded-xl bg-primary p-4 text-primary-foreground sm:p-7 lg:col-span-3">
+          <div className="mb-4 flex items-center gap-3 sm:mb-5">
             <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10">
               <Church aria-hidden className="h-6 w-6 text-amber-200" />
             </span>
@@ -46,7 +46,7 @@ export default async function Home({
               Próxima missa
             </p>
           </div>
-          <h2 className="mb-4 text-2xl sm:text-3xl">
+          <h2 className="mb-3 text-[1.35rem] sm:mb-4 sm:text-3xl">
             {nextMass ? 'Vamos celebrar juntos' : 'A comunidade nos reúne'}
           </h2>
           {nextMass ? (
@@ -57,7 +57,7 @@ export default async function Home({
               <p className="mt-2 break-words">{nextMass.location}</p>
               <p className="text-sm text-primary-foreground/75">{nextMass.celebrant}</p>
               <Link
-                className="mt-5 inline-flex min-h-11 items-center gap-2 font-medium underline underline-offset-4"
+                className="mt-4 inline-flex min-h-11 items-center gap-2 font-medium underline underline-offset-4 sm:mt-5"
                 href={'/missas/' + nextMass.id}
               >
                 Ver celebração
@@ -71,13 +71,13 @@ export default async function Home({
           )}
         </section>
         <section className="panel lg:col-span-2">
-          <div className="mb-4 flex items-center gap-3">
+          <div className="mb-3 flex items-center gap-3 sm:mb-4">
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
               <BookOpen aria-hidden className="h-5 w-5 text-primary" />
             </span>
             <p className="eyebrow !mb-0">Palavra do dia</p>
           </div>
-          <h2 className="mb-3 text-xl">Leitura em destaque</h2>
+          <h2 className="mb-2.5 text-xl sm:mb-3">Leitura em destaque</h2>
           {reading ? (
             <>
               <p className="font-medium">{reading.reference}</p>
@@ -90,12 +90,15 @@ export default async function Home({
               As leituras de hoje ainda não foram publicadas. Consulte as datas disponíveis.
             </p>
           )}
-          <Link href="/leituras" className="text-link mt-5 inline-flex min-h-11 items-center">
+          <Link
+            href="/leituras"
+            className="text-link mt-4 inline-flex min-h-11 items-center sm:mt-5"
+          >
             Abrir leituras
           </Link>
         </section>
       </div>
-      <div className="grid gap-8 xl:grid-cols-2">
+      <div className="grid gap-7 sm:gap-8 xl:grid-cols-2">
         <section>
           <div className="mb-4 flex items-center justify-between gap-3">
             <h2 className="section-title !mb-0">Próximos eventos</h2>
@@ -103,7 +106,7 @@ export default async function Home({
               Ver todos
             </Link>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {nextEvents.length ? (
               nextEvents.map((row) => <RecordCard key={row.id} resource="eventos" row={row} />)
             ) : (
@@ -123,7 +126,7 @@ export default async function Home({
               Ver todos
             </Link>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {notices.length ? (
               notices
                 .slice(0, 2)
@@ -141,7 +144,7 @@ export default async function Home({
       </div>
       <nav
         aria-label="Atalhos da comunidade"
-        className="mt-9 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
+        className="mt-7 grid grid-cols-2 gap-3 sm:mt-9 sm:grid-cols-3 lg:grid-cols-5"
       >
         {[
           { href: '/missas', label: 'Missas', icon: Church },
@@ -153,7 +156,7 @@ export default async function Home({
           <Link
             key={href}
             href={href}
-            className="interactive-card flex min-h-16 items-center gap-3 rounded-xl border bg-card p-4 text-sm font-medium"
+            className="interactive-card flex min-h-14 items-center gap-3 rounded-xl border bg-card p-3 text-sm font-medium sm:min-h-16 sm:p-4"
           >
             <Icon aria-hidden className="h-5 w-5 text-primary" />
             {label}

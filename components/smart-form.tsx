@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -36,6 +36,7 @@ export function SmartForm({
   const router = useRouter();
   const [error, setError] = useState('');
   const [hydrated, setHydrated] = useState(false);
+  const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
   useEffect(() => setHydrated(true), []);
   const {
     register,
@@ -45,7 +46,7 @@ export function SmartForm({
   return (
     <form
       noValidate
-      className="space-y-5"
+      className="space-y-4 sm:space-y-5"
       onSubmit={handleSubmit(async (values) => {
         setError('');
         try {
@@ -72,7 +73,7 @@ export function SmartForm({
         </p>
       )}
       {fields.map((field) => (
-        <div key={field.name} className="space-y-2">
+        <div key={field.name} className="space-y-1.5 sm:space-y-2">
           <label className="block text-sm font-medium" htmlFor={field.name}>
             {field.label}
           </label>
@@ -98,25 +99,56 @@ export function SmartForm({
                 </option>
               ))}
             </select>
+          ) : field.type === 'password' ? (
+            <div className="relative">
+              <Input
+                id={field.name}
+                type={visiblePasswords[field.name] ? 'text' : 'password'}
+                className="pr-12"
+                autoComplete={
+                  field.name === 'confirmPassword' || submitLabel !== 'Entrar'
+                    ? 'new-password'
+                    : 'current-password'
+                }
+                {...register(field.name)}
+                aria-invalid={!!errors[field.name]}
+                aria-describedby={field.name + '-help'}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex min-h-11 w-11 items-center justify-center rounded-r-md text-muted-foreground hover:text-primary"
+                aria-label={`${visiblePasswords[field.name] ? 'Ocultar' : 'Mostrar'} ${field.label.toLocaleLowerCase('pt-BR')}`}
+                aria-pressed={visiblePasswords[field.name] || false}
+                onClick={() =>
+                  setVisiblePasswords((current) => ({
+                    ...current,
+                    [field.name]: !current[field.name],
+                  }))
+                }
+              >
+                {visiblePasswords[field.name] ? (
+                  <EyeOff aria-hidden className="h-5 w-5" />
+                ) : (
+                  <Eye aria-hidden className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           ) : (
             <Input
               id={field.name}
               type={field.type || 'text'}
+              lang={field.type === 'date' ? 'pt-BR' : undefined}
               inputMode={
                 field.type === 'tel' ? 'tel' : field.type === 'email' ? 'email' : undefined
               }
               autoComplete={
-                field.type === 'password'
-                  ? field.name === 'confirmPassword' || submitLabel !== 'Entrar'
-                    ? 'new-password'
-                    : 'current-password'
-                  : field.name === 'email'
-                    ? 'email'
-                    : field.name === 'phone'
-                      ? 'tel'
-                      : field.name === 'name'
-                        ? 'name'
-                        : undefined
+                field.name === 'email'
+                  ? 'email'
+                  : field.name === 'phone'
+                    ? 'tel'
+                    : field.name === 'name'
+                      ? 'name'
+                      : undefined
               }
               {...register(field.name)}
               aria-invalid={!!errors[field.name]}
@@ -134,7 +166,7 @@ export function SmartForm({
           </div>
         </div>
       ))}
-      <div className="grid grid-cols-1 gap-3 border-t pt-5 sm:flex sm:flex-wrap">
+      <div className="grid grid-cols-1 gap-3 border-t pt-4 sm:flex sm:flex-wrap sm:pt-5">
         <Button type="submit" disabled={!hydrated || isSubmitting} className="w-full sm:w-auto">
           {isSubmitting && <Loader2 aria-hidden className="animate-spin" />}
           {!hydrated ? 'Preparando…' : isSubmitting ? 'Aguarde…' : submitLabel}

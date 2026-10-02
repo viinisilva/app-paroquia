@@ -37,7 +37,7 @@ type ShellUser = { name: string; role: 'ADMIN' | 'MEMBER' };
 type NavEntry = { href: string; label: string; icon: typeof Church };
 
 const adminEntries: NavEntry[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Visão Geral', icon: LayoutDashboard },
   { href: '/missas', label: 'Missas', icon: Church },
   { href: '/calendario', label: 'Calendário', icon: CalendarDays },
   { href: '/membros', label: 'Membros', icon: Users },
@@ -356,7 +356,7 @@ export function Header({ user }: { user: ShellUser }) {
             </span>
           </span>
         </Link>
-        <span className={cn(!isAdmin && 'hidden lg:inline-flex')}>
+        <span className="hidden lg:inline-flex">
           <LogoutButton />
         </span>
       </div>
@@ -381,7 +381,7 @@ export function AppShell({ user, children }: { user: ShellUser; children: React.
         <main
           id="conteudo"
           className={cn(
-            'content-container px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8',
+            'content-container px-4 py-4 sm:px-6 sm:py-7 lg:px-8 lg:py-8',
             member &&
               'pb-[calc(var(--mobile-nav-height)+env(safe-area-inset-bottom)+1.5rem)] lg:pb-8',
           )}

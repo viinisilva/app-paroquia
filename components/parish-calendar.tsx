@@ -45,7 +45,9 @@ export function ParishCalendar({
     <div className="grid items-start gap-6 2xl:grid-cols-[1.35fr_1fr]">
       <section className="panel min-w-0 !p-3 sm:!p-6">
         <div className="mb-4 flex items-center justify-between gap-2">
-          <h2 className="text-lg capitalize">{format(first, 'MMMM yyyy', { locale: ptBR })}</h2>
+          <h2 className="text-base capitalize sm:text-lg">
+            {format(first, "MMMM 'de' yyyy", { locale: ptBR })}
+          </h2>
           <div className="flex shrink-0 gap-1">
             <Button
               variant="ghost"
@@ -81,6 +83,7 @@ export function ParishCalendar({
           id="calendar-month"
           className="field mb-5 max-w-56"
           type="month"
+          lang="pt-BR"
           value={month}
           min="1900-01"
           max="2100-12"
@@ -140,7 +143,10 @@ export function ParishCalendar({
             );
           })}
         </div>
-        <div className="mt-5 flex flex-wrap gap-5 border-t pt-4 text-xs" aria-label="Legenda">
+        <div
+          className="mt-4 flex flex-wrap gap-4 border-t pt-3 text-xs sm:mt-5 sm:gap-5 sm:pt-4"
+          aria-label="Legenda"
+        >
           <span className="flex items-center gap-2">
             <Church aria-hidden className="h-4 w-4 text-primary" />
             Missas

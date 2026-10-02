@@ -13,12 +13,16 @@ export function PageHeader({
   href?: string;
 }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4 sm:mb-8">
+    <div className="mb-5 flex flex-wrap items-end justify-between gap-3 sm:mb-8 sm:gap-4">
       <div>
-        <p className="eyebrow mb-2">Paróquia São Roque</p>
-        <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">{title}</h1>
+        <p className="eyebrow mb-1.5 sm:mb-2">Paróquia São Roque</p>
+        <h1 className="text-[clamp(1.4rem,6vw,1.75rem)] font-semibold leading-tight sm:text-3xl">
+          {title}
+        </h1>
         {description && (
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{description}</p>
+          <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground sm:mt-2">
+            {description}
+          </p>
         )}
       </div>
       {action && href && (
@@ -49,11 +53,13 @@ export function EmptyState({
 }) {
   return (
     <div
-      className={`rounded-xl border border-dashed bg-card px-5 text-center ${compact ? 'py-7' : 'py-9'}`}
+      className={`rounded-xl border border-dashed bg-card px-4 text-center sm:px-5 ${compact ? 'py-6 sm:py-7' : 'py-7 sm:py-9'}`}
     >
       <Icon aria-hidden className="mx-auto mb-3 h-7 w-7 text-muted-foreground" />
       <h2 className="text-base font-semibold sm:text-lg">{title}</h2>
-      <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">{description}</p>
+      <p className="mx-auto mt-1.5 max-w-sm text-sm leading-6 text-muted-foreground">
+        {description}
+      </p>
       {action && href && (
         <Button asChild className="mt-5">
           <Link href={href}>

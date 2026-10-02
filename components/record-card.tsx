@@ -79,17 +79,17 @@ export function RecordCard({
                 {row.role === 'ADMIN' ? 'Administrador' : 'Membro'}
               </Badge>
             </div>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 break-words text-sm text-muted-foreground">
               {row.community || 'Comunidade não informada'}
             </p>
           </div>
         </div>
-        <div className="mt-5 space-y-2 border-t pt-4 text-sm text-muted-foreground">
+        <div className="mt-4 space-y-2 border-t pt-3 text-sm text-muted-foreground sm:mt-5 sm:pt-4">
           <p className="flex min-w-0 items-start gap-2">
             <Mail aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
             <span className="break-all">{row.email}</span>
           </p>
-          <p className="flex items-start gap-2">
+          <p className="flex min-w-0 items-start gap-2 break-words">
             <Phone aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
             {phone}
           </p>
@@ -112,7 +112,7 @@ export function RecordCard({
             {title}
           </Link>
         </h2>
-        <p className="mt-3 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
+        <p className="mt-2.5 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-muted-foreground sm:mt-3">
           {row.content}
         </p>
         <CardActions href={href} canManage={canManage} label="Ler aviso" />
@@ -123,7 +123,7 @@ export function RecordCard({
   const isMass = resource === 'missas';
   return (
     <article className={cn('panel interactive-card min-w-0', past && 'opacity-70')}>
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3 sm:gap-4">
         <DateMark date={row.date} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -135,12 +135,12 @@ export function RecordCard({
               {row.time.slice(0, 5)}
             </span>
           </div>
-          <h2 className="mt-3 break-words text-lg font-semibold leading-snug">
+          <h2 className="mt-2.5 break-words text-lg font-semibold leading-snug sm:mt-3">
             <Link href={href} className="hover:underline">
               {isMass ? row.location : title}
             </Link>
           </h2>
-          <div className="mt-3 space-y-2 break-words text-sm text-muted-foreground">
+          <div className="mt-2.5 space-y-1.5 break-words text-sm text-muted-foreground sm:mt-3 sm:space-y-2">
             {!isMass && (
               <p className="flex gap-2">
                 <MapPin aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
@@ -172,7 +172,7 @@ function CardActions({
   label?: string;
 }) {
   return (
-    <div className="mt-5 flex flex-wrap items-center gap-2 border-t pt-3">
+    <div className="mt-4 flex flex-wrap items-center gap-2 border-t pt-2 sm:mt-5 sm:pt-3">
       <Link
         href={href}
         className="inline-flex min-h-11 items-center gap-2 rounded-md px-2 text-sm font-medium text-primary"

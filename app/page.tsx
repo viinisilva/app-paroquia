@@ -21,7 +21,7 @@ export default async function Login({
           height={160}
           priority
           sizes="(max-width: 1023px) 88px, 160px"
-          className="h-[5.5rem] w-[5.5rem] rounded-lg bg-white object-contain p-1 lg:h-40 lg:w-40"
+          className="h-20 w-20 rounded-lg bg-white object-contain p-1 sm:h-[5.5rem] sm:w-[5.5rem] lg:h-40 lg:w-40"
         />
         <p className="eyebrow !mb-0">Fé • Comunidade • Serviço</p>
         <h1 className="whitespace-nowrap lg:whitespace-normal">
@@ -40,7 +40,7 @@ export default async function Login({
         <div className="w-full max-w-md">
           <p className="eyebrow mb-2">Seja bem-vindo</p>
           <h2 className="mb-2 text-2xl sm:text-3xl">Que bom ter você aqui.</h2>
-          <p className="mb-6 text-sm text-muted-foreground sm:mb-8 sm:text-base">
+          <p className="mb-5 text-sm text-muted-foreground sm:mb-8 sm:text-base">
             Entre para acompanhar a vida da nossa comunidade.
           </p>
           {sessao && (
@@ -49,13 +49,13 @@ export default async function Login({
             </p>
           )}
           <AuthForm mode="login" />
-          <p className="mt-6 text-sm">
+          <p className="mt-5 text-sm sm:mt-6">
             Ainda não faz parte?{' '}
             <Link className="text-link" href="/cadastro">
               Cadastre-se
             </Link>
           </p>
-          <p className="mt-8 text-xs text-muted-foreground lg:mt-10">
+          <p className="mt-6 text-xs text-muted-foreground sm:mt-8 lg:mt-10">
             Paróquia São Roque • Fé, comunidade e serviço
           </p>
         </div>

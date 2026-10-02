@@ -22,13 +22,13 @@ test('cadastro pela interface, avisos agendados, leituras e acessibilidade', asy
   await page.getByLabel('Comunidade (opcional)').fill('Matriz');
   await page.getByLabel('E-mail', { exact: true }).fill(email);
   await page.getByLabel('Senha', { exact: true }).fill('SenhaSegura!12345');
-  await page.getByLabel('Confirmar senha').fill('Diferente!123');
+  await page.getByLabel('Confirmar senha', { exact: true }).fill('Diferente!123');
   await page.getByRole('button', { name: 'Criar minha conta' }).click();
   await expect(page.getByText('As senhas não coincidem.')).toBeVisible();
-  await page.getByLabel('Confirmar senha').fill('SenhaSegura!12345');
+  await page.getByLabel('Confirmar senha', { exact: true }).fill('SenhaSegura!12345');
   await page.getByRole('button', { name: 'Criar minha conta' }).click();
   await expect(page).toHaveURL('/inicio');
-  const adminContext = await browser.newContext();
+  const adminContext = await browser.newContext({ locale: 'pt-BR' });
   const admin = await adminContext.newPage();
   const login = await adminContext.request.post('/api/auth/login', {
     headers: { origin },

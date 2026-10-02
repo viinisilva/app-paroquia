@@ -12,7 +12,7 @@ test('login ADMIN, sessão persistente e logout sem alterar dados de negócio', 
   await page.getByLabel('Senha', { exact: true }).fill(process.env.SEED_ADMIN_PASSWORD!);
   await page.getByRole('button', { name: 'Entrar', exact: true }).click();
   await expect(page).toHaveURL('/dashboard');
-  await expect(page.getByRole('heading', { name: 'Olá, Administrador' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Visão Geral', exact: true })).toBeVisible();
 
   const session = (await page.context().cookies()).find(
     (cookie) => cookie.name === 'paroquia_session',

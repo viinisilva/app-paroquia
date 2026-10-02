@@ -28,7 +28,7 @@ export default async function ReadingsPage({
         action={user.role === 'ADMIN' ? 'Nova leitura' : undefined}
         href="/leituras/novo"
       />
-      <div className="panel mb-6">
+      <div className="panel mb-5 sm:mb-6">
         <form className="grid items-end gap-3 sm:grid-cols-[minmax(0,16rem)_auto_auto]">
           <div className="min-w-0">
             <label htmlFor="reading-date" className="mb-2 block text-sm font-medium">
@@ -39,6 +39,7 @@ export default async function ReadingsPage({
               name="date"
               className="field"
               type="date"
+              lang="pt-BR"
               defaultValue={date}
               key={date}
               required
@@ -66,9 +67,9 @@ export default async function ReadingsPage({
         )}
       </div>
       {rows.length ? (
-        <div className="mx-auto max-w-4xl space-y-5">
+        <div className="mx-auto max-w-4xl space-y-4 sm:space-y-5">
           {rows.map((row) => (
-            <article className="rounded-xl border bg-card px-5 py-6 sm:px-8 sm:py-8" key={row.id}>
+            <article className="rounded-xl border bg-card px-4 py-5 sm:px-8 sm:py-8" key={row.id}>
               <p className="eyebrow mb-2">
                 {readingLabels[row.type as keyof typeof readingLabels]}
               </p>
@@ -77,7 +78,9 @@ export default async function ReadingsPage({
               <p className="max-w-prose whitespace-pre-wrap break-words text-[1.03rem] leading-8">
                 {row.content}
               </p>
-              <p className="mt-6 break-words text-xs text-muted-foreground">Fonte: {row.source}</p>
+              <p className="mt-5 break-words text-xs text-muted-foreground sm:mt-6">
+                Fonte: {row.source}
+              </p>
               {user.role === 'ADMIN' && (
                 <Link href={'/leituras/' + row.id} className="text-link mt-4 inline-block text-sm">
                   Gerenciar leitura
@@ -90,8 +93,6 @@ export default async function ReadingsPage({
         <EmptyState
           title="Leituras ainda não publicadas para esta data."
           description="Consulte outra data ou volte mais tarde."
-          action={user.role === 'ADMIN' ? 'Nova leitura' : undefined}
-          href="/leituras/novo"
           compact
         />
       )}

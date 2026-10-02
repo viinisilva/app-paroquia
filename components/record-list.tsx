@@ -14,37 +14,29 @@ const emptyCopy = {
   missas: {
     title: 'Nenhuma missa agendada',
     description: 'Comece cadastrando a próxima celebração da paróquia.',
-    action: 'Cadastrar missa',
     icon: Church,
   },
   membros: {
     title: 'Nenhum membro encontrado',
     description: 'Cadastre quem participa da comunidade paroquial.',
-    action: 'Cadastrar membro',
     icon: Users,
   },
   eventos: {
     title: 'Nenhum evento programado',
     description: 'Adicione encontros e atividades da comunidade.',
-    action: 'Criar evento',
     icon: CalendarHeart,
   },
   avisos: {
     title: 'Nenhum aviso publicado',
     description: 'Compartilhe uma orientação ou novidade com a comunidade.',
-    action: 'Publicar aviso',
     icon: Bell,
   },
   leituras: {
     title: 'Nenhuma leitura publicada',
     description: 'As leituras publicadas aparecerão aqui.',
-    action: 'Nova leitura',
     icon: Church,
   },
-} satisfies Record<
-  Resource,
-  { title: string; description: string; action: string; icon: typeof Church }
->;
+} satisfies Record<Resource, { title: string; description: string; icon: typeof Church }>;
 
 export function RecordList({
   resource,
@@ -73,7 +65,6 @@ export function RecordList({
   );
   const activeFilters = Number(Boolean(date)) + Number(Boolean(location));
   const locations = [...new Set(rows.map((row) => row.location).filter(Boolean))];
-  const createHref = '/' + resource + '/' + (resource === 'missas' ? 'nova' : 'novo');
   const empty = emptyCopy[resource];
 
   function clearFilters() {
@@ -84,7 +75,7 @@ export function RecordList({
 
   return (
     <>
-      <div className="panel mb-5">
+      <div className="panel mb-4 sm:mb-5">
         <div className="grid items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-4">
           <div className={resource === 'missas' ? 'xl:col-span-2' : 'xl:col-span-4'}>
             <label htmlFor="search" className="mb-2 block text-sm font-medium">
@@ -117,6 +108,7 @@ export function RecordList({
                 <Input
                   id="date-filter"
                   type="date"
+                  lang="pt-BR"
                   value={date}
                   onChange={(event) => setDate(event.target.value)}
                 />
@@ -162,6 +154,7 @@ export function RecordList({
                       <Input
                         id="date-filter-mobile"
                         type="date"
+                        lang="pt-BR"
                         value={date}
                         onChange={(event) => setDate(event.target.value)}
                       />
@@ -200,7 +193,7 @@ export function RecordList({
           )}
         </div>
       </div>
-      <div className="mb-4 flex min-h-11 flex-wrap items-center justify-between gap-2">
+      <div className="mb-3 flex min-h-11 flex-wrap items-center justify-between gap-2 sm:mb-4">
         <p aria-live="polite" className="text-sm text-muted-foreground">
           {filtered.length} {filtered.length === 1 ? 'resultado' : 'resultados'}
         </p>
@@ -225,8 +218,6 @@ export function RecordList({
               : empty.description
           }
           icon={empty.icon}
-          action={!query && !activeFilters && canManage ? empty.action : undefined}
-          href={createHref}
           compact
         />
       )}
