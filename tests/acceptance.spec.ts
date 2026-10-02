@@ -34,9 +34,9 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
   await page.getByRole('button', { name: 'Entrar', exact: true }).click();
   await expect(page.getByText('Informe um e-mail válido.')).toBeVisible();
   await login(page, process.env.SEED_ADMIN_EMAIL!, process.env.SEED_ADMIN_PASSWORD!);
-  const dashboardCounts = await page
-    .locator('section[aria-label="Resumo da paróquia"] .tabular-nums')
-    .allTextContents();
+  const dashboardStats = page.locator('section[aria-label="Resumo da paróquia"] .tabular-nums');
+  await expect(dashboardStats).toHaveCount(4);
+  const dashboardCounts = await dashboardStats.allTextContents();
   await page.screenshot({ path: 'artifacts/dashboard-desktop.png', fullPage: true });
   await page.getByRole('link', { name: 'Nova missa', exact: true }).click();
   await fill(page, {
@@ -68,9 +68,7 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
   await page.getByLabel('Local', { exact: true }).selectOption('Matriz teste ' + suffix);
   await expect(page.locator('article')).toHaveCount(1);
   await page.goto('/dashboard');
-  await expect(
-    page.locator('section[aria-label="Resumo da paróquia"] .tabular-nums').nth(1),
-  ).toHaveText(String(Number(dashboardCounts[1]) + 1));
+  await expect(dashboardStats.nth(1)).toHaveText(String(Number(dashboardCounts[1]) + 1));
   await page.goto('/membros/novo');
   await fill(page, {
     'Nome completo': 'Membro teste ' + suffix,
