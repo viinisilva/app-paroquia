@@ -1,65 +1,63 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Download } from "lucide-react"
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>
-  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>
+'use client';
+import { useEffect, useState } from 'react';
+import { Download, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+interface InstallEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
-
 export default function PWAInstallPrompt() {
-  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [showPrompt, setShowPrompt] = useState(false)
-
+  const [prompt, setPrompt] = useState<InstallEvent | null>(null);
   useEffect(() => {
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
     const handler = (e: Event) => {
-      e.preventDefault()
-      setInstallPrompt(e as BeforeInstallPromptEvent)
-      setShowPrompt(true)
-    }
-
-    window.addEventListener("beforeinstallprompt", handler)
-
+      e.preventDefault();
+      setPrompt(e as InstallEvent);
+    };
+    const installed = () => setPrompt(null);
+    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('appinstalled', installed);
     return () => {
-      window.removeEventListener("beforeinstallprompt", handler)
-    }
-  }, [])
-
-  const handleInstallClick = () => {
-    if (!installPrompt) return
-
-    installPrompt.prompt()
-    installPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === "accepted") {
-        console.log("Usuário aceitou a instalação do PWA")
-      } else {
-        console.log("Usuário recusou a instalação do PWA")
-      }
-      setShowPrompt(false)
-    })
-  }
-
-  if (!showPrompt) return null
-
+      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('appinstalled', installed);
+    };
+  }, []);
+  if (!prompt) return null;
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50">
-      <Card className="church-card border-amber-300">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-amber-900">Instalar App da Paróquia</p>
-              <p className="text-sm text-amber-700">Instale o app para acesso rápido mesmo offline</p>
-            </div>
-            <Button onClick={handleInstallClick} className="church-button bg-amber-700 hover:bg-amber-800">
-              <Download className="mr-2 h-4 w-4" />
-              Instalar
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
+    <aside
+      aria-label="Instalar aplicativo"
+      className="fixed bottom-4 left-4 right-4 z-40 mx-auto max-w-md rounded-xl border bg-card p-4 shadow-lg"
+    >
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold">São Roque sempre por perto</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Instale para acessar mais rápido. A agenda precisa de conexão.
+          </p>
+          <Button
+            className="mt-3"
+            onClick={async () => {
+              try {
+                await prompt.prompt();
+                await prompt.userChoice;
+              } finally {
+                setPrompt(null);
+              }
+            }}
+          >
+            <Download aria-hidden />
+            Instalar aplicativo
+          </Button>
+        </div>
+        <Button
+          aria-label="Fechar sugestão de instalação"
+          variant="ghost"
+          size="icon"
+          onClick={() => setPrompt(null)}
+        >
+          <X />
+        </Button>
+      </div>
+    </aside>
+  );
 }

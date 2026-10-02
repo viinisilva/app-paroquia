@@ -1,148 +1,118 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 @layer base {
   :root {
-    --background: 36 70% 97%;
-    --foreground: 20 14.3% 4.1%;
-    --card: 36 70% 99%;
-    --card-foreground: 20 14.3% 4.1%;
-    --popover: 36 70% 99%;
-    --popover-foreground: 20 14.3% 4.1%;
-    --primary: 27 56% 50%;
-    --primary-foreground: 60 9.1% 97.8%;
-    --secondary: 220 60% 40%;
-    --secondary-foreground: 60 9.1% 97.8%;
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
-    --accent: 12 60% 45%;
-    --accent-foreground: 60 9.1% 97.8%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
-    --ring: 27 56% 50%;
-    --radius: 0.5rem;
+    --background: 38 33% 97%;
+    --foreground: 25 22% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 25 22% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 25 22% 18%;
+    --primary: 24 31% 26%;
+    --primary-foreground: 38 45% 97%;
+    --secondary: 37 36% 91%;
+    --secondary-foreground: 25 27% 24%;
+    --muted: 36 24% 94%;
+    --muted-foreground: 25 10% 40%;
+    --accent: 38 48% 91%;
+    --accent-foreground: 25 36% 24%;
+    --destructive: 0 65% 39%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 32 23% 85%;
+    --input: 30 20% 74%;
+    --ring: 33 51% 37%;
+    --radius: 0.75rem;
+    --gold: 39 45% 47%;
   }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
-    background-image: url("/images/church-bg.png");
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
+    font-family: Inter, Arial, sans-serif;
+    line-height: 1.6;
   }
   h1,
   h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: "Cinzel", serif;
+  .font-cinzel {
+    font-family: Cinzel, Georgia, serif;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button,
+  a {
+    touch-action: manipulation;
+  }
+  :focus-visible {
+    outline: 3px solid hsl(var(--ring));
+    outline-offset: 3px;
+  }
+  input,
+  select,
+  textarea {
+    min-width: 0;
+  }
+  input:not([type='checkbox']),
+  select {
+    min-height: 44px;
+  }
+  button {
+    min-height: 44px;
   }
 }
-
-.church-card {
-  background-color: rgba(255, 253, 250, 0.95);
-  box-shadow: 0 4px 20px rgba(139, 69, 19, 0.15);
-  border: 1px solid rgba(205, 164, 94, 0.3);
-  border-radius: var(--radius);
+@layer components {
+  .panel {
+    @apply rounded-xl border bg-card p-5 shadow-sm sm:p-7;
+  }
+  .eyebrow {
+    @apply mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground;
+  }
+  .text-link {
+    @apply font-medium text-primary underline underline-offset-4 hover:decoration-2;
+  }
+  .field {
+    @apply flex min-h-11 w-full rounded-md border border-input bg-card px-3 py-2 text-base;
+  }
+  .section-title {
+    @apply mb-5 text-xl font-semibold;
+  }
+  .auth-layout {
+    @apply min-h-screen lg:grid lg:grid-cols-2;
+  }
+  .auth-story {
+    @apply flex flex-col items-center justify-center gap-6 px-6 py-10 text-center text-primary-foreground lg:min-h-screen lg:p-16;
+    background: radial-gradient(ellipse at top, #6b503a, #30251e);
+  }
+  .auth-story h1 {
+    @apply text-4xl leading-tight lg:text-5xl;
+  }
+  .auth-story .eyebrow {
+    color: #e1c999;
+  }
+  .auth-panel {
+    @apply flex items-center justify-center px-6 py-12 lg:p-16;
+  }
+  .record-grid {
+    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+  }
 }
-
-.church-header {
-  background: linear-gradient(to right, rgba(139, 69, 19, 0.9), rgba(205, 164, 94, 0.9));
-  color: white;
-  box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1);
-}
-
-.church-button {
-  background: linear-gradient(to right, #8b4513, #cd853f);
-  color: white;
-  border: none;
-  box-shadow: 0 2px 4px rgba(139, 69, 19, 0.2);
-  transition: all 0.3s ease;
-}
-
-.church-button:hover {
-  background: linear-gradient(to right, #7b3500, #b87333);
-  box-shadow: 0 4px 8px rgba(139, 69, 19, 0.3);
-}
-
-.church-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.church-table th {
-  background-color: rgba(139, 69, 19, 0.1);
-  color: #5d4037;
-  font-family: "Cinzel", serif;
-  font-weight: 600;
-}
-
-.church-table tr:nth-child(even) {
-  background-color: rgba(205, 164, 94, 0.05);
-}
-
-.church-table tr:hover {
-  background-color: rgba(205, 164, 94, 0.1);
-}
-
-.church-divider {
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(139, 69, 19, 0.5), transparent);
-  margin: 1.5rem 0;
-}
-
-.stained-glass-bg {
-  background-image: url("/images/stained-glass.png");
-  background-size: cover;
-  background-position: center;
-  position: relative;
-}
-
-.stained-glass-bg::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.85);
-  z-index: -1;
-}
-
-.cross-decoration {
-  position: relative;
-}
-
-.cross-decoration::before {
-  content: "✝";
-  position: absolute;
-  top: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 20px;
-  color: rgba(139, 69, 19, 0.7);
-}
-
-.church-card-header {
-  border-bottom: 1px solid rgba(205, 164, 94, 0.3);
-  position: relative;
-}
-
-.church-card-header::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(139, 69, 19, 0.5), transparent);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
