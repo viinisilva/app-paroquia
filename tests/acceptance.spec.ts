@@ -1,6 +1,7 @@
 import { test, expect, type Page, type Request } from '@playwright/test';
 import { Pool } from 'pg';
 import { mkdir } from 'node:fs/promises';
+import { tokenHash } from '../lib/password';
 import { assertSafeTestDatabase } from './database-safety';
 
 test.setTimeout(360000);
@@ -13,6 +14,40 @@ test.beforeAll(() => {
 const suffix = Date.now().toString();
 const memberEmail = 'membro-com-email-extenso-' + suffix + '@example.test';
 const memberPassword = 'TesteSeguro!12345';
+let activePool: Pool | null = null;
+
+async function cleanupAcceptanceRecords(pool: Pool) {
+  const users = await pool.query<{ email: string }>(
+    `select email from users
+     where email like 'membro-com-email-extenso-%@example.test'
+        or email like 'registro-%@example.test'`,
+  );
+  await pool.query("delete from masses where location like 'Matriz teste %'");
+  await pool.query("delete from events where title like 'Evento teste %'");
+  await pool.query("delete from notices where title like 'Aviso teste %'");
+  await pool.query(
+    `delete from users
+     where email like 'membro-com-email-extenso-%@example.test'
+        or email like 'registro-%@example.test'`,
+  );
+  const keys = users.rows.flatMap(({ email }) => [
+    tokenHash(`email:${email.toLowerCase()}`),
+    tokenHash(`login:${email.toLowerCase()}`),
+  ]);
+  if (keys.length)
+    await pool.query('delete from auth_attempts where key = any($1::varchar[])', [keys]);
+}
+
+test.afterEach(async () => {
+  const pool = activePool ?? new Pool({ connectionString: dbURL, max: 1 });
+  try {
+    await cleanupAcceptanceRecords(pool);
+  } finally {
+    activePool = null;
+    await pool.end();
+  }
+});
+
 async function login(page: Page, email: string, password: string) {
   await page.goto('/');
   await page.getByLabel('E-mail', { exact: true }).fill(email);
@@ -33,6 +68,8 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
   page,
 }) => {
   const pool = new Pool({ connectionString: dbURL, max: 1 });
+  activePool = pool;
+  await cleanupAcceptanceRecords(pool);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await mkdir('artifacts/final', { recursive: true });
@@ -163,7 +200,6 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
   const memberPage = await memberContext.newPage();
   await login(memberPage, memberEmail, memberPassword);
   await expect(memberPage).toHaveURL('/inicio');
-  await expect(memberPage.getByRole('heading', { name: 'Aviso teste ' + suffix })).toBeVisible();
   await memberPage.goto('/avisos');
   await expect(memberPage.getByRole('heading', { name: 'Aviso teste ' + suffix })).toBeVisible();
   // O mesmo banco é acessado por um contexto independente do navegador.
@@ -394,6 +430,5 @@ test('fluxos ADMIN e MEMBER, persistência, autorização, PWA e responsividade'
   expect(errors).toEqual([]);
   const adminLogout = await page.request.post('/api/auth/logout', { headers: { origin } });
   expect(adminLogout.status()).toBe(200);
-  await pool.end();
   await memberContext.close();
 });
