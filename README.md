@@ -83,6 +83,12 @@ SEED_ADMIN_NAME=Administrador
 SEED_ADMIN_EMAIL=seu-email@exemplo.com
 SEED_ADMIN_PASSWORD=uma-senha-forte-com-10-ou-mais-caracteres
 SEED_DEMO=false
+# Somente para uma branch Neon Preview isolada:
+DEMO_MEMBER_EMAIL=
+DEMO_MEMBER_PASSWORD=
+DEMO_SEED_TARGET=
+ALLOW_PREVIEW_DEMO_SEED=
+PREVIEW_DATABASE_HOST=
 ```
 
 - Use a URL de conexão **pooled** do Neon em `DATABASE_URL`. Troque `sslmode=require` da URL copiada por `sslmode=verify-full` para manter a verificação completa explícita no driver PostgreSQL.
@@ -111,6 +117,22 @@ pnpm db:verify
 ```
 
 O seed é idempotente por e-mail: ele não substitui senha nem perfil de uma conta existente. `SEED_DEMO=true` adiciona uma missa, um evento e um aviso explicitamente fictícios. Nenhuma leitura litúrgica é inventada pelo seed.
+
+### Ambiente demonstrativo do Preview
+
+O seed completo de homologação é exclusivo para uma branch Neon Preview isolada. Ele preserva o ADMIN existente e cria, de forma idempotente, cinco MEMBERs fictícios, quatro missas futuras, três eventos, três avisos e leituras editoriais curtas identificadas como conteúdo não litúrgico.
+
+Configure as variáveis DEMO somente em um arquivo local ignorado pelo Git. `PREVIEW_DATABASE_HOST` deve conter apenas o hostname previamente conferido no painel Neon para a branch `preview`. A execução também exige `DEMO_SEED_TARGET=preview` e `ALLOW_PREVIEW_DEMO_SEED=CREATE_OR_UPDATE_DEMO_DATA`.
+
+```bash
+pnpm db:seed:demo
+pnpm db:verify:demo
+pnpm db:cleanup:demo-auth
+```
+
+O script recusa Vercel Production, conexão sem pooling/SSL completo, banco diferente de `neondb` e qualquer hostname que não corresponda ao endpoint Preview confirmado. Ele usa IDs reservados para atualizar apenas o conjunto DEMO e nunca remove outros registros.
+
+Após uma homologação automatizada, `db:cleanup:demo-auth` invalida somente as sessões das cinco contas MEMBER demonstrativas e remove o limite de login associado à conta MEMBER usada no teste. A rotina preserva o ADMIN e também exige todas as confirmações de segurança do Preview.
 
 ## Executar localmente
 
@@ -169,6 +191,8 @@ As leituras antigas de 2025 do protótipo foram preservadas em `data/legacy-read
 ## Credenciais de demonstração
 
 Não há senha fixa ou credencial hardcoded no repositório. Para a apresentação, crie uma conta administrativa com o seed e uma conta `MEMBER` pela tela de cadastro. Guarde as credenciais fora do Git e teste ambas em janela anônima antes da banca.
+
+Quando o ambiente DEMO do Preview for utilizado, a credencial MEMBER permanece somente nas variáveis locais `DEMO_MEMBER_EMAIL` e `DEMO_MEMBER_PASSWORD`; ela não deve ser cadastrada na Vercel nem incluída em commits, screenshots ou relatórios.
 
 ## Rotina de manutenção
 
