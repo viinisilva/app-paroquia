@@ -18,11 +18,17 @@
     "db:local": "node scripts/local-db.mjs",
     "test": "node --require ./scripts/node-userinfo-shim.cjs --import tsx --test tests/unit.test.ts",
     "test:e2e": "playwright test",
-    "format": "prettier --write app lib components tests scripts data *.ts *.mjs *.json",
-    "format:check": "prettier --check app lib components tests scripts data *.ts *.mjs *.json",
+    "mobile:add:android": "node --require ./scripts/node-userinfo-shim.cjs ./node_modules/@capacitor/cli/bin/capacitor add android",
+    "mobile:sync": "node --require ./scripts/node-userinfo-shim.cjs ./node_modules/@capacitor/cli/bin/capacitor sync android",
+    "mobile:open": "node --require ./scripts/node-userinfo-shim.cjs ./node_modules/@capacitor/cli/bin/capacitor open android",
+    "mobile:assets": "node scripts/generate-android-assets.mjs",
+    "format": "prettier --write app lib components tests scripts data docs capacitor-web *.ts *.mjs *.json",
+    "format:check": "prettier --check app lib components tests scripts data docs capacitor-web *.ts *.mjs *.json",
     "db:cleanup": "tsx scripts/cleanup-auth.ts"
   },
   "dependencies": {
+    "@capacitor/android": "8.5.2",
+    "@capacitor/core": "8.5.2",
     "@fontsource/cinzel": "^5.3.0",
     "@fontsource/inter": "^5.3.0",
     "@hookform/resolvers": "^3.9.1",
@@ -81,6 +87,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
+    "@capacitor/cli": "8.5.2",
     "@electric-sql/pglite": "^0.5.8",
     "@eslint/eslintrc": "^3.3.7",
     "@next/eslint-plugin-next": "15.5.27",

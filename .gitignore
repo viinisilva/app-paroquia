@@ -16,6 +16,15 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# Android local/build/signing artifacts
+/android/.gradle/
+/android/local.properties
+/android/**/build/
+*.apk
+*.aab
+*.jks
+*.keystore
+
 # env files
 .env*
 !.env.example

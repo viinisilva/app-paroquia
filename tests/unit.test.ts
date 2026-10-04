@@ -8,6 +8,7 @@ import {
   dateSchema,
 } from '../lib/validation';
 import { hashPassword, verifyPassword, tokenHash } from '../lib/password';
+import { isIosDevice, isStandaloneMode } from '../lib/pwa';
 test('validação de data real e horário', () => {
   assert.equal(dateSchema.safeParse('2026-02-30').success, false);
   assert.equal(dateSchema.safeParse('2028-02-29').success, true);
@@ -65,4 +66,16 @@ test('scrypt usa salt aleatório e verifica somente a senha correta', async () =
   assert.equal(await verifyPassword('SenhaErrada!123', first), false);
   assert.equal(await verifyPassword('qualquer', 'invalido'), false);
   assert.equal(tokenHash('token').length, 64);
+});
+
+test('instalação PWA reconhece iPhone, iPad moderno e modo standalone', () => {
+  assert.equal(
+    isIosDevice('Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', 'iPhone', 5),
+    true,
+  );
+  assert.equal(isIosDevice('Mozilla/5.0 (Macintosh)', 'MacIntel', 5), true);
+  assert.equal(isIosDevice('Mozilla/5.0 (Linux; Android 15)', 'Linux armv8l', 5), false);
+  assert.equal(isStandaloneMode(true, undefined), true);
+  assert.equal(isStandaloneMode(false, true), true);
+  assert.equal(isStandaloneMode(false, false), false);
 });
