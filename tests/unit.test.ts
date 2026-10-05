@@ -9,6 +9,11 @@ import {
 } from '../lib/validation';
 import { hashPassword, verifyPassword, tokenHash } from '../lib/password';
 import { isIosDevice, isStandaloneMode } from '../lib/pwa';
+import {
+  NATIVE_HISTORY_INDEX_KEY,
+  readNativeHistoryIndex,
+  withNativeHistoryIndex,
+} from '../lib/native-history';
 test('validação de data real e horário', () => {
   assert.equal(dateSchema.safeParse('2026-02-30').success, false);
   assert.equal(dateSchema.safeParse('2028-02-29').success, true);
@@ -78,4 +83,15 @@ test('instalação PWA reconhece iPhone, iPad moderno e modo standalone', () => 
   assert.equal(isStandaloneMode(true, undefined), true);
   assert.equal(isStandaloneMode(false, true), true);
   assert.equal(isStandaloneMode(false, false), false);
+});
+
+test('histórico nativo preserva o estado do App Router e normaliza o índice', () => {
+  const state = withNativeHistoryIndex({ __NA: true, custom: 'valor' }, 2);
+
+  assert.equal(state.__NA, true);
+  assert.equal(state.custom, 'valor');
+  assert.equal(state[NATIVE_HISTORY_INDEX_KEY], 2);
+  assert.equal(readNativeHistoryIndex(state), 2);
+  assert.equal(readNativeHistoryIndex(withNativeHistoryIndex(null, -1)), 0);
+  assert.equal(readNativeHistoryIndex({ [NATIVE_HISTORY_INDEX_KEY]: '2' }), 0);
 });
