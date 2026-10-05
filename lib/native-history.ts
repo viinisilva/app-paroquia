@@ -1,5 +1,31 @@
 export const NATIVE_HISTORY_INDEX_KEY = '__paroquiaNativeHistoryIndex';
 
+const NATIVE_APP_ROOT_PATHS = new Set(['/', '/dashboard', '/inicio']);
+
+export type NativeBackActions = {
+  back: () => void;
+  minimize: () => void;
+};
+
+export function isAndroidCapacitor(isNativePlatform: boolean, platform: string) {
+  return isNativePlatform && platform === 'android';
+}
+
+export function handleNativeBack(
+  pathname: string,
+  historyIndex: number,
+  actions: NativeBackActions,
+) {
+  const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+
+  if (NATIVE_APP_ROOT_PATHS.has(normalizedPath) || historyIndex <= 0) {
+    actions.minimize();
+    return;
+  }
+
+  actions.back();
+}
+
 export function readNativeHistoryIndex(state: unknown) {
   if (!state || typeof state !== 'object' || Array.isArray(state)) return 0;
 

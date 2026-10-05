@@ -10,6 +10,8 @@ import {
 import { hashPassword, verifyPassword, tokenHash } from '../lib/password';
 import { isIosDevice, isStandaloneMode } from '../lib/pwa';
 import {
+  handleNativeBack,
+  isAndroidCapacitor,
   NATIVE_HISTORY_INDEX_KEY,
   readNativeHistoryIndex,
   withNativeHistoryIndex,
@@ -94,4 +96,38 @@ test('histórico nativo preserva o estado do App Router e normaliza o índice', 
   assert.equal(readNativeHistoryIndex(state), 2);
   assert.equal(readNativeHistoryIndex(withNativeHistoryIndex(null, -1)), 0);
   assert.equal(readNativeHistoryIndex({ [NATIVE_HISTORY_INDEX_KEY]: '2' }), 0);
+});
+
+test('Back Android volta em rotas internas e minimiza nas raízes lógicas', () => {
+  const calls: string[] = [];
+  const actions = {
+    back: () => calls.push('back'),
+    minimize: () => calls.push('minimize'),
+  };
+
+  handleNativeBack('/calendario', 3, actions);
+  handleNativeBack('/missas', 2, actions);
+  handleNativeBack('/dashboard', 1, actions);
+  handleNativeBack('/inicio/', 2, actions);
+  handleNativeBack('/', 1, actions);
+
+  assert.deepEqual(calls, ['back', 'back', 'minimize', 'minimize', 'minimize']);
+});
+
+test('Back Android não sai do app quando uma rota interna não tem histórico', () => {
+  const calls: string[] = [];
+
+  handleNativeBack('/eventos', 0, {
+    back: () => calls.push('back'),
+    minimize: () => calls.push('minimize'),
+  });
+
+  assert.deepEqual(calls, ['minimize']);
+});
+
+test('listener nativo fica restrito ao Capacitor Android', () => {
+  assert.equal(isAndroidCapacitor(true, 'android'), true);
+  assert.equal(isAndroidCapacitor(false, 'web'), false);
+  assert.equal(isAndroidCapacitor(true, 'ios'), false);
+  assert.equal(isAndroidCapacitor(false, 'ios'), false);
 });

@@ -3,11 +3,16 @@
 import { useEffect } from 'react';
 import { App } from '@capacitor/app';
 import { Capacitor, type PluginListenerHandle } from '@capacitor/core';
-import { readNativeHistoryIndex, withNativeHistoryIndex } from '@/lib/native-history';
+import {
+  handleNativeBack,
+  isAndroidCapacitor,
+  readNativeHistoryIndex,
+  withNativeHistoryIndex,
+} from '@/lib/native-history';
 
 export default function NativeBackButton() {
   useEffect(() => {
-    if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'android') return;
+    if (!isAndroidCapacitor(Capacitor.isNativePlatform(), Capacitor.getPlatform())) return;
 
     const originalPushState = window.history.pushState.bind(window.history);
     const originalReplaceState = window.history.replaceState.bind(window.history);
@@ -36,12 +41,10 @@ export default function NativeBackButton() {
     window.addEventListener('popstate', handlePopState);
 
     void App.addListener('backButton', () => {
-      if (currentIndex > 0) {
-        window.history.back();
-        return;
-      }
-
-      void App.minimizeApp();
+      handleNativeBack(window.location.pathname, currentIndex, {
+        back: () => window.history.back(),
+        minimize: () => void App.minimizeApp(),
+      });
     }).then((handle) => {
       if (disposed) {
         void handle.remove();
