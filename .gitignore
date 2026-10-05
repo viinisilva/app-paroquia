@@ -17,6 +17,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # Android local/build/signing artifacts
+/android/.idea/
 /android/.gradle/
 /android/local.properties
 /android/**/build/
