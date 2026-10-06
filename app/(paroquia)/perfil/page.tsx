@@ -1,6 +1,8 @@
 import { requireUser } from '@/lib/auth';
 import { PageHeader } from '@/components/page-parts';
 import { ProfileForm } from '@/components/profile-form';
+import { AccountDeletion } from '@/components/account-deletion';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Church, Mail, Phone } from 'lucide-react';
 export default async function Profile() {
@@ -64,6 +66,24 @@ export default async function Profile() {
               community: user.community,
             }}
           />
+        </section>
+        <section className="panel space-y-3">
+          <h2 className="text-xl">Privacidade e conta</h2>
+          <p className="text-sm text-muted-foreground">
+            Consulte como seus dados são usados ou exclua sua conta quando não quiser mais
+            participar.
+          </p>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href="/privacidade" className="text-link min-h-11 content-center">
+              Política de Privacidade
+            </Link>
+            <AccountDeletion />
+          </div>
+          {user.role === 'ADMIN' && (
+            <p className="text-sm text-muted-foreground">
+              A última conta administrativa precisa indicar um sucessor antes de ser excluída.
+            </p>
+          )}
         </section>
       </div>
     </>

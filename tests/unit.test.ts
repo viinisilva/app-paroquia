@@ -6,6 +6,7 @@ import {
   profileSchema,
   memberSchema,
   dateSchema,
+  accountDeletionSchema,
 } from '../lib/validation';
 import { hashPassword, verifyPassword, tokenHash } from '../lib/password';
 import { isIosDevice, isStandaloneMode } from '../lib/pwa';
@@ -29,6 +30,23 @@ test('validação de data real e horário', () => {
     }).success,
     false,
   );
+});
+
+test('exclusão exige senha e confirmação explícita sem aceitar campos de outro usuário', () => {
+  assert.equal(
+    accountDeletionSchema.safeParse({ password: '', confirmation: 'EXCLUIR' }).success,
+    false,
+  );
+  assert.equal(
+    accountDeletionSchema.safeParse({ password: 'senha', confirmation: 'excluir' }).success,
+    false,
+  );
+  const parsed = accountDeletionSchema.parse({
+    password: 'senha',
+    confirmation: 'EXCLUIR',
+    userId: 'outro',
+  });
+  assert.equal('userId' in parsed, false);
 });
 test('cadastro normaliza e-mail e rejeita senha fraca e confirmação divergente', () => {
   const base = {

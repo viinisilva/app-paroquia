@@ -22,7 +22,11 @@ export default function Cadastro() {
         </p>
         <AuthForm mode="register" />
         <p className="mt-5 text-xs text-muted-foreground">
-          Seu nome, telefone e comunidade ficam disponíveis à administração paroquial.
+          Seu nome, telefone e comunidade ficam disponíveis à administração paroquial. Leia a{' '}
+          <Link href="/privacidade" className="text-link">
+            Política de Privacidade
+          </Link>
+          .
         </p>
       </div>
     </main>

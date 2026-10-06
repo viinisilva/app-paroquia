@@ -6,11 +6,11 @@ import { AuthForm } from '@/components/auth-form';
 export default async function Login({
   searchParams,
 }: {
-  searchParams: Promise<{ sessao?: string }>;
+  searchParams: Promise<{ sessao?: string; conta?: string }>;
 }) {
   const user = await getUser();
   if (user) redirect(user.role === 'ADMIN' ? '/dashboard' : '/inicio');
-  const { sessao } = await searchParams;
+  const { sessao, conta } = await searchParams;
   return (
     <main className="auth-layout">
       <section className="auth-story">
@@ -48,11 +48,24 @@ export default async function Login({
               Sua sessão expirou ou não está disponível. Entre novamente.
             </p>
           )}
+          {conta === 'excluida' && (
+            <p role="status" className="mb-5 rounded-lg bg-accent p-3 text-sm">
+              Sua conta foi excluída.
+            </p>
+          )}
           <AuthForm mode="login" />
           <p className="mt-5 text-sm sm:mt-6">
             Ainda não faz parte?{' '}
             <Link className="text-link" href="/cadastro">
               Cadastre-se
+            </Link>
+          </p>
+          <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs">
+            <Link className="text-link" href="/privacidade">
+              Privacidade
+            </Link>
+            <Link className="text-link" href="/excluir-conta">
+              Exclusão de conta
             </Link>
           </p>
           <p className="mt-6 text-xs text-muted-foreground sm:mt-8 lg:mt-10">

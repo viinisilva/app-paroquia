@@ -54,6 +54,12 @@ export const loginSchema = z.object({
   email,
   password: z.string().min(1, 'Informe a senha.').max(128),
 });
+export const accountDeletionSchema = z.object({
+  password: z.string().min(1, 'Informe sua senha atual.').max(128),
+  confirmation: z.literal('EXCLUIR', {
+    errorMap: () => ({ message: 'Digite EXCLUIR para confirmar.' }),
+  }),
+});
 export const massSchema = z.object({
   date: dateSchema,
   time: timeSchema,
