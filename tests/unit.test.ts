@@ -10,6 +10,7 @@ import {
 } from '../lib/validation';
 import { hashPassword, verifyPassword, tokenHash } from '../lib/password';
 import { isIosDevice, isStandaloneMode } from '../lib/pwa';
+import { liturgyHtmlToText, parseCnbbLiturgy } from '../lib/cnbb-liturgy-parser';
 import {
   handleNativeBack,
   isAndroidCapacitor,
@@ -91,6 +92,55 @@ test('scrypt usa salt aleatório e verifica somente a senha correta', async () =
   assert.equal(await verifyPassword('SenhaErrada!123', first), false);
   assert.equal(await verifyPassword('qualquer', 'invalido'), false);
   assert.equal(tokenHash('token').length, 64);
+});
+
+test('Liturgia da CNBB é convertida em texto seguro e organizada por data', () => {
+  const parsed = parseCnbbLiturgy(
+    {
+      content: {
+        date: '2026-10-24',
+        title: '<b>Tempo Comum</b>',
+        color: 'verde',
+        details:
+          '<div>Sábado, 24 de Outubro de 2026</div><div>29ª Semana</div><div>Leituras:</div>',
+        leituras: '<div>Leituras:</div><div>Ef 4,7-16</div><div>Lc 13,1-9</div>',
+        body: '<h3>Evangelho</h3><p>Texto autorizado &amp; conferido.</p><script>indesejado()</script>',
+      },
+    },
+    '2026-10-24',
+    'https://fonte.example/',
+  );
+
+  assert.equal(parsed.title, 'Tempo Comum');
+  assert.equal(parsed.details, '29ª Semana');
+  assert.deepEqual(parsed.references, ['Ef 4,7-16', 'Lc 13,1-9']);
+  assert.equal(parsed.body, 'Evangelho\n\nTexto autorizado & conferido.');
+  assert.equal(parsed.body.includes('indesejado'), false);
+});
+
+test('parser da liturgia rejeita data divergente e remove HTML executável', () => {
+  assert.equal(
+    liturgyHtmlToText('<p>Leitura &#x31;</p><iframe>conteúdo externo</iframe>'),
+    'Leitura 1',
+  );
+  assert.throws(
+    () =>
+      parseCnbbLiturgy(
+        {
+          content: {
+            date: '2026-10-25',
+            title: 'Tempo Comum',
+            color: 'verde',
+            details: '',
+            leituras: '',
+            body: '<p>Texto</p>',
+          },
+        },
+        '2026-10-24',
+        'https://fonte.example/',
+      ),
+    /CNBB_DATE_MISMATCH/,
+  );
 });
 
 test('instalação PWA reconhece iPhone, iPad moderno e modo standalone', () => {
