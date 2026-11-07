@@ -11,7 +11,12 @@ import {
 import { hashPassword, verifyPassword, tokenHash } from '../lib/password';
 import { isIosDevice, isStandaloneMode } from '../lib/pwa';
 import { AUTH_LIMIT_PER_IP, loginAttemptLimits } from '../lib/login-attempts';
-import { liturgyBodyBlocks, liturgyHtmlToText, parseCnbbLiturgy } from '../lib/cnbb-liturgy-parser';
+import {
+  liturgyBodyBlocks,
+  liturgyHtmlToText,
+  normalizeBibleReference,
+  parseCnbbLiturgy,
+} from '../lib/cnbb-liturgy-parser';
 import {
   handleNativeBack,
   isAndroidCapacitor,
@@ -177,6 +182,13 @@ test('liturgia mantém número e texto do versículo juntos, com quebras interna
     { kind: 'verse', number: '1', lines: ['Primeira linha,', 'segunda linha.'] },
     { kind: 'verse', number: '2', lines: ['Frase partida', 'em dois blocos.'] },
   ]);
+});
+
+test('referência de salmo digitada como "SI" vira "Sl"; outras não mudam', () => {
+  assert.equal(normalizeBibleReference('SI 96(97),1.6'), 'Sl 96(97),1.6');
+  assert.equal(normalizeBibleReference('Sl 1,1-2'), 'Sl 1,1-2');
+  assert.equal(normalizeBibleReference('Fl 4,10-19'), 'Fl 4,10-19');
+  assert.equal(normalizeBibleReference('Sirácida 3,2'), 'Sirácida 3,2');
 });
 
 test('liturgia separa título vermelho da referência e tolera <center> sem fechamento', () => {

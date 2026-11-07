@@ -156,11 +156,13 @@ export function liturgyBodyBlocks(html: string): LiturgyBlock[] {
         kind: 'paragraph',
         style: 'reference',
         lines: [
-          clean(
-            filled
-              .slice(split)
-              .map((s) => s.text)
-              .join(''),
+          normalizeBibleReference(
+            clean(
+              filled
+                .slice(split)
+                .map((s) => s.text)
+                .join(''),
+            ),
           ),
         ],
       };
@@ -177,7 +179,7 @@ export function liturgyBodyBlocks(html: string): LiturgyBlock[] {
     const style = every('subtitle') ? 'subtitle' : every('reference') ? 'reference' : 'text';
     if (paragraph && paragraph.style !== style) endParagraph();
     paragraph ??= { kind: 'paragraph', style, lines: [] };
-    paragraph.lines.push(text);
+    paragraph.lines.push(style === 'reference' ? normalizeBibleReference(text) : text);
     return true;
   };
   // Fora dos versículos, uma quebra sobre linha vazia (<br><br>) encerra o parágrafo.
@@ -250,10 +252,15 @@ export function liturgyBodyBlocks(html: string): LiturgyBlock[] {
   return blocks;
 }
 
+// "Sl" (Salmo) às vezes chega digitado como "SI", com i maiúsculo, na fonte.
+export function normalizeBibleReference(value: string) {
+  return value.replace(/^SI(?=\s*\d)/, 'Sl');
+}
+
 function readingReferences(value: string) {
   return liturgyHtmlToText(value)
     .split('\n')
-    .map((line) => line.trim())
+    .map((line) => normalizeBibleReference(line.trim()))
     .filter((line) => line && !/^leituras:?$/i.test(line));
 }
 

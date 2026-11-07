@@ -125,7 +125,7 @@ async function ReadingsContent({
                 {officialLiturgy.references.map((reference) => (
                   <span
                     key={reference}
-                    className="rounded-full border border-primary/15 bg-card px-3 py-1.5 text-sm font-medium text-primary"
+                    className="bible-ref rounded-full border border-primary/15 bg-card px-3 py-1.5 text-sm font-medium text-primary"
                   >
                     {reference}
                   </span>
