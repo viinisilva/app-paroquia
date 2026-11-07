@@ -36,7 +36,7 @@ export function LiturgyBody({ blocks }: { blocks: LiturgyBlock[] }) {
             className={cn(
               'mb-3',
               block.style === 'subtitle' && 'text-right italic text-muted-foreground',
-              block.style === 'reference' && 'bible-ref text-sm font-medium text-primary',
+              block.style === 'reference' && 'text-sm font-medium text-primary',
             )}
           >
             <Lines lines={block.lines} />

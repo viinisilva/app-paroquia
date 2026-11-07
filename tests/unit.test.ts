@@ -11,12 +11,8 @@ import {
 import { hashPassword, verifyPassword, tokenHash } from '../lib/password';
 import { isIosDevice, isStandaloneMode } from '../lib/pwa';
 import { AUTH_LIMIT_PER_IP, loginAttemptLimits } from '../lib/login-attempts';
-import {
-  liturgyBodyBlocks,
-  liturgyHtmlToText,
-  normalizeBibleReference,
-  parseCnbbLiturgy,
-} from '../lib/cnbb-liturgy-parser';
+import { formatBibleReference } from '../lib/bible-books';
+import { liturgyBodyBlocks, liturgyHtmlToText, parseCnbbLiturgy } from '../lib/cnbb-liturgy-parser';
 import {
   handleNativeBack,
   isAndroidCapacitor,
@@ -127,7 +123,7 @@ test('Liturgia da CNBB é convertida em texto seguro e organizada por data', () 
 
   assert.equal(parsed.title, 'Tempo Comum');
   assert.equal(parsed.details, '29ª Semana');
-  assert.deepEqual(parsed.references, ['Ef 4,7-16', 'Lc 13,1-9']);
+  assert.deepEqual(parsed.references, ['Efésios 4,7-16', 'Lucas 13,1-9']);
   assert.deepEqual(parsed.blocks, [
     { kind: 'heading', text: 'Evangelho' },
     { kind: 'paragraph', style: 'text', lines: ['Texto autorizado & conferido.'] },
@@ -184,11 +180,28 @@ test('liturgia mantém número e texto do versículo juntos, com quebras interna
   ]);
 });
 
-test('referência de salmo digitada como "SI" vira "Sl"; outras não mudam', () => {
-  assert.equal(normalizeBibleReference('SI 96(97),1.6'), 'Sl 96(97),1.6');
-  assert.equal(normalizeBibleReference('Sl 1,1-2'), 'Sl 1,1-2');
-  assert.equal(normalizeBibleReference('Fl 4,10-19'), 'Fl 4,10-19');
-  assert.equal(normalizeBibleReference('Sirácida 3,2'), 'Sirácida 3,2');
+test('referências bíblicas mostram o nome do livro por extenso', () => {
+  assert.equal(formatBibleReference('Fl 4,10-19'), 'Filipenses 4,10-19');
+  assert.equal(
+    formatBibleReference('Sl 111(112),1-2.5-6.8a e 9 (R. 1a)'),
+    'Salmo 111(112),1-2.5-6.8a e 9 (R. 1a)',
+  );
+  assert.equal(formatBibleReference('SI 96(97),1.6'), 'Salmo 96(97),1.6');
+  assert.equal(formatBibleReference('2Cor 8,9'), '2 Coríntios 8,9');
+  assert.equal(formatBibleReference('Cf. Jo 17,17ba'), 'Cf. João 17,17ba');
+  assert.equal(formatBibleReference('Jó 1,6-22'), 'Jó 1,6-22');
+  assert.equal(
+    formatBibleReference('Lc 1,46-48 (R. Is 61,10b)'),
+    'Lucas 1,46-48 (R. Isaías 61,10b)',
+  );
+  assert.equal(
+    formatBibleReference('Sl 1,1-2 (R. cf. Ef 5,1)'),
+    'Salmo 1,1-2 (R. cf. Efésios 5,1)',
+  );
+  assert.equal(formatBibleReference('Is 61,1 (Lc 4,18)'), 'Isaías 61,1 (Lucas 4,18)');
+  // Já por extenso ou desconhecida: não muda.
+  assert.equal(formatBibleReference('Filipenses 4,10'), 'Filipenses 4,10');
+  assert.equal(formatBibleReference('Xy 3,2'), 'Xy 3,2');
 });
 
 test('liturgia separa título vermelho da referência e tolera <center> sem fechamento', () => {
@@ -201,7 +214,7 @@ test('liturgia separa título vermelho da referência e tolera <center> sem fech
     { kind: 'heading', text: 'Festa' },
     { kind: 'paragraph', style: 'text', lines: ['Texto comum'] },
     { kind: 'heading', text: 'Salmo responsorial' },
-    { kind: 'paragraph', style: 'reference', lines: ['Sl 1,1-2'] },
+    { kind: 'paragraph', style: 'reference', lines: ['Salmo 1,1-2'] },
     { kind: 'paragraph', style: 'text', lines: ['R. Refrão do salmo.'] },
   ]);
 });

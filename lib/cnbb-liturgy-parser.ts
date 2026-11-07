@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { formatBibleReference } from './bible-books';
 
 const responseSchema = z.object({
   content: z.object({
@@ -7,7 +8,8 @@ const responseSchema = z.object({
     color: z.string().max(80),
     details: z.string().max(50_000),
     leituras: z.string().max(20_000),
-    body: z.string().max(200_000),
+    // Dias com várias missas (Finados, Natal) passam de 200 mil caracteres.
+    body: z.string().max(1_000_000),
   }),
 });
 
@@ -156,7 +158,7 @@ export function liturgyBodyBlocks(html: string): LiturgyBlock[] {
         kind: 'paragraph',
         style: 'reference',
         lines: [
-          normalizeBibleReference(
+          formatBibleReference(
             clean(
               filled
                 .slice(split)
@@ -179,7 +181,7 @@ export function liturgyBodyBlocks(html: string): LiturgyBlock[] {
     const style = every('subtitle') ? 'subtitle' : every('reference') ? 'reference' : 'text';
     if (paragraph && paragraph.style !== style) endParagraph();
     paragraph ??= { kind: 'paragraph', style, lines: [] };
-    paragraph.lines.push(style === 'reference' ? normalizeBibleReference(text) : text);
+    paragraph.lines.push(style === 'reference' ? formatBibleReference(text) : text);
     return true;
   };
   // Fora dos versículos, uma quebra sobre linha vazia (<br><br>) encerra o parágrafo.
@@ -252,15 +254,10 @@ export function liturgyBodyBlocks(html: string): LiturgyBlock[] {
   return blocks;
 }
 
-// "Sl" (Salmo) às vezes chega digitado como "SI", com i maiúsculo, na fonte.
-export function normalizeBibleReference(value: string) {
-  return value.replace(/^SI(?=\s*\d)/, 'Sl');
-}
-
 function readingReferences(value: string) {
   return liturgyHtmlToText(value)
     .split('\n')
-    .map((line) => normalizeBibleReference(line.trim()))
+    .map((line) => formatBibleReference(line.trim()))
     .filter((line) => line && !/^leituras:?$/i.test(line));
 }
 

@@ -26,7 +26,7 @@ export async function HomeReading({ reading, date }: { reading?: RecordRow; date
           {liturgy.references.map((reference) => (
             <li
               key={reference}
-              className="bible-ref rounded-full border border-primary/15 px-3 py-1 text-sm text-primary"
+              className="rounded-full border border-primary/15 px-3 py-1 text-sm text-primary"
             >
               {reference}
             </li>
