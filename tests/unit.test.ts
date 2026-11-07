@@ -11,7 +11,7 @@ import {
 import { hashPassword, verifyPassword, tokenHash } from '../lib/password';
 import { isIosDevice, isStandaloneMode } from '../lib/pwa';
 import { AUTH_LIMIT_PER_IP, loginAttemptLimits } from '../lib/login-attempts';
-import { liturgyHtmlToText, parseCnbbLiturgy } from '../lib/cnbb-liturgy-parser';
+import { liturgyBodyBlocks, liturgyHtmlToText, parseCnbbLiturgy } from '../lib/cnbb-liturgy-parser';
 import {
   handleNativeBack,
   isAndroidCapacitor,
@@ -123,8 +123,11 @@ test('Liturgia da CNBB é convertida em texto seguro e organizada por data', () 
   assert.equal(parsed.title, 'Tempo Comum');
   assert.equal(parsed.details, '29ª Semana');
   assert.deepEqual(parsed.references, ['Ef 4,7-16', 'Lc 13,1-9']);
-  assert.equal(parsed.body, 'Evangelho\n\nTexto autorizado & conferido.');
-  assert.equal(parsed.body.includes('indesejado'), false);
+  assert.deepEqual(parsed.blocks, [
+    { kind: 'heading', text: 'Evangelho' },
+    { kind: 'paragraph', style: 'text', lines: ['Texto autorizado & conferido.'] },
+  ]);
+  assert.equal(JSON.stringify(parsed.blocks).includes('indesejado'), false);
 });
 
 test('parser da liturgia rejeita data divergente e remove HTML executável', () => {
@@ -150,6 +153,45 @@ test('parser da liturgia rejeita data divergente e remove HTML executável', () 
       ),
     /CNBB_DATE_MISMATCH/,
   );
+});
+
+// Estrutura do HTML da CNBB com texto fictício.
+const verse = (number: string, html: string) =>
+  `<div><div style="display: flex;flex-direction:row;align-items:flex-start"><div style="text-align: left; min-width: 30px; font-size: 12px; color: #FF0000">${number}</div><div><div style="flex: 1"><div>${html}</div></div></div></div></div>`;
+
+test('liturgia mantém número e texto do versículo juntos, com quebras internas', () => {
+  const blocks = liturgyBodyBlocks(
+    '<font color="red"><center>PRIMEIRA LEITURA</center></font>' +
+      '<p align="right"><i>Frase de destaque.</i></p>' +
+      'Leitura de exemplo <font color="#ff6666">1,1-3</font><br> <br>' +
+      verse('<br>', 'Naquele tempo,') +
+      verse('1', 'Primeira linha, <br>segunda linha.') +
+      verse('2', '<div>Frase partida&nbsp;</div><div>em dois blocos.</div>') +
+      '<div id="9" style="display: none;"><h3>Oculto - Lc 1,1</h3></div>',
+  );
+  assert.deepEqual(blocks, [
+    { kind: 'heading', text: 'PRIMEIRA LEITURA' },
+    { kind: 'paragraph', style: 'subtitle', lines: ['Frase de destaque.'] },
+    { kind: 'paragraph', style: 'text', lines: ['Leitura de exemplo 1,1-3'] },
+    { kind: 'verse', number: '', lines: ['Naquele tempo,'] },
+    { kind: 'verse', number: '1', lines: ['Primeira linha,', 'segunda linha.'] },
+    { kind: 'verse', number: '2', lines: ['Frase partida', 'em dois blocos.'] },
+  ]);
+});
+
+test('liturgia separa título vermelho da referência e tolera <center> sem fechamento', () => {
+  const blocks = liturgyBodyBlocks(
+    '<center><font color="#ff0000">Festa</font></center><center><div>Texto comum</div>' +
+      '<br><font color="red">Salmo responsorial&nbsp;</font><font color="tomato">Sl 1,1-2</font>' +
+      '<br><font color="red">R.</font> Refrão do salmo.<br><br>',
+  );
+  assert.deepEqual(blocks, [
+    { kind: 'heading', text: 'Festa' },
+    { kind: 'paragraph', style: 'text', lines: ['Texto comum'] },
+    { kind: 'heading', text: 'Salmo responsorial' },
+    { kind: 'paragraph', style: 'reference', lines: ['Sl 1,1-2'] },
+    { kind: 'paragraph', style: 'text', lines: ['R. Refrão do salmo.'] },
+  ]);
 });
 
 test('instalação PWA reconhece iPhone, iPad moderno e modo standalone', () => {

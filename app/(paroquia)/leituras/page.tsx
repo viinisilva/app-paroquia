@@ -6,6 +6,7 @@ import { getRecords } from '@/lib/records';
 import { today, readingLabels, formatDate } from '@/lib/dates';
 import { dateSchema } from '@/lib/validation';
 import { getCnbbLiturgy } from '@/lib/cnbb-liturgy';
+import { LiturgyBody } from '@/components/liturgy-body';
 import type { RecordRow } from '@/lib/resources';
 import { PageHeader, EmptyState } from '@/components/page-parts';
 import { Button } from '@/components/ui/button';
@@ -95,7 +96,7 @@ async function ReadingsContent({
       {officialLiturgy ? (
         <article
           aria-labelledby="official-liturgy-title"
-          className="mx-auto max-w-4xl overflow-hidden rounded-xl border bg-card shadow-[0_1px_2px_rgba(54,39,29,0.05)]"
+          className="mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-[0_1px_2px_rgba(54,39,29,0.05)]"
         >
           <header className="border-b bg-secondary/45 px-4 py-5 sm:px-8 sm:py-7">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -135,9 +136,7 @@ async function ReadingsContent({
 
           <div className="px-4 py-5 sm:px-8 sm:py-8">
             <h3 className="mb-4 text-lg font-semibold text-primary">Leituras do dia</h3>
-            <div className="max-w-prose whitespace-pre-line break-words text-base leading-8 sm:text-[1.03rem]">
-              {officialLiturgy.body}
-            </div>
+            <LiturgyBody blocks={officialLiturgy.blocks} />
             <p className="mt-7 border-t pt-4 text-xs leading-5 text-muted-foreground">
               Fonte: Conferência Nacional dos Bispos do Brasil (CNBB).{' '}
               <a
@@ -210,7 +209,7 @@ function ReadingsFallback() {
     <div
       role="status"
       aria-label="Carregando a liturgia do dia"
-      className="mx-auto max-w-4xl space-y-3 rounded-xl border bg-card px-4 py-5 sm:px-8 sm:py-7"
+      className="mx-auto max-w-5xl space-y-3 rounded-xl border bg-card px-4 py-5 sm:px-8 sm:py-7"
     >
       <div className="h-4 w-40 animate-pulse rounded bg-secondary" />
       <div className="h-7 w-3/4 animate-pulse rounded bg-secondary" />
