@@ -1,5 +1,5 @@
 import 'server-only';
-import { sql } from 'drizzle-orm';
+import { inArray, sql } from 'drizzle-orm';
 import { db } from './db';
 import { authAttempts } from './db/schema';
 import { tokenHash } from './password';
@@ -17,4 +17,11 @@ export async function allowAuthAttempt(key: string, limit = 10) {
     })
     .returning();
   return attempt.count <= limit;
+}
+// Após um login válido, as tentativas registradas deixam de contar contra a conta.
+export async function clearAuthAttempts(keys: string[]) {
+  if (!keys.length) return;
+  await db()
+    .delete(authAttempts)
+    .where(inArray(authAttempts.key, keys.map(tokenHash)));
 }

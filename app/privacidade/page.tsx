@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { privacyContact } from '@/lib/privacy';
 
-export const metadata: Metadata = { title: 'Política de Privacidade | Paróquia São Roque' };
+export const metadata: Metadata = { title: 'Política de Privacidade' };
 
 export default function PrivacyPage() {
   return (

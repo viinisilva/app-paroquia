@@ -10,6 +10,7 @@ import {
 } from '../lib/validation';
 import { hashPassword, verifyPassword, tokenHash } from '../lib/password';
 import { isIosDevice, isStandaloneMode } from '../lib/pwa';
+import { AUTH_LIMIT_PER_IP, loginAttemptLimits } from '../lib/login-attempts';
 import { liturgyHtmlToText, parseCnbbLiturgy } from '../lib/cnbb-liturgy-parser';
 import {
   handleNativeBack,
@@ -18,6 +19,14 @@ import {
   readNativeHistoryIndex,
   withNativeHistoryIndex,
 } from '../lib/native-history';
+test('limite de login separa e-mail+IP e mantém o global acima do limite por IP', () => {
+  const [pair, global] = loginAttemptLimits('membro@example.test', '203.0.113.7');
+  assert.equal(pair.key, 'email-ip:membro@example.test:203.0.113.7');
+  assert.equal(global.key, 'email:membro@example.test');
+  // Uma única origem esgota o próprio limite por IP antes de alcançar o limite global.
+  assert.ok(global.limit > AUTH_LIMIT_PER_IP);
+  assert.ok(pair.limit < global.limit);
+});
 test('validação de data real e horário', () => {
   assert.equal(dateSchema.safeParse('2026-02-30').success, false);
   assert.equal(dateSchema.safeParse('2028-02-29').success, true);

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { privacyContact } from '@/lib/privacy';
 
-export const metadata: Metadata = { title: 'Excluir conta | Paróquia São Roque' };
+export const metadata: Metadata = { title: 'Excluir conta' };
 
 export default function AccountDeletionPage() {
   return (

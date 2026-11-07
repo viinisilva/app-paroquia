@@ -5,7 +5,8 @@ import { users } from '@/lib/db/schema';
 import { createSession, deleteSession } from '@/lib/auth';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import { loginSchema, registerSchema } from '@/lib/validation';
-import { allowAuthAttempt } from '@/lib/auth-rate-limit';
+import { allowAuthAttempt, clearAuthAttempts } from '@/lib/auth-rate-limit';
+import { AUTH_LIMIT_PER_IP, loginAttemptLimits } from '@/lib/login-attempts';
 
 export const runtime = 'nodejs';
 const failure = (error: string, status: number) => NextResponse.json({ error }, { status });
@@ -28,7 +29,7 @@ export async function POST(
     const ip = process.env.VERCEL
       ? request.headers.get('x-vercel-forwarded-for') || 'unknown'
       : 'local';
-    if (!(await allowAuthAttempt(`ip:${ip}`, 60)))
+    if (!(await allowAuthAttempt(`ip:${ip}`, AUTH_LIMIT_PER_IP)))
       return failure('Muitas tentativas. Aguarde 15 minutos.', 429);
     const body: unknown = await request.json();
     if (action === 'register') {
@@ -54,8 +55,10 @@ export async function POST(
     }
     const parsed = loginSchema.safeParse(body);
     if (!parsed.success) return failure('Informe e-mail e senha válidos.', 400);
-    if (!(await allowAuthAttempt(`email:${parsed.data.email}`)))
-      return failure('Muitas tentativas. Aguarde 15 minutos.', 429);
+    const limits = loginAttemptLimits(parsed.data.email, ip);
+    for (const { key, limit } of limits)
+      if (!(await allowAuthAttempt(key, limit)))
+        return failure('Muitas tentativas. Aguarde 15 minutos.', 429);
     const [user] = await db()
       .select()
       .from(users)
@@ -65,6 +68,8 @@ export async function POST(
     const dummy = `scrypt:${'0'.repeat(32)}:${'0'.repeat(128)}`;
     const valid = await verifyPassword(parsed.data.password, user?.passwordHash ?? dummy);
     if (!user || !valid) return failure('E-mail ou senha incorretos.', 401);
+    // Só falhas permanecem contadas: o login válido zera o histórico deste e-mail.
+    await clearAuthAttempts(limits.map(({ key }) => key));
     await createSession(user.id);
     return NextResponse.json({ url: user.role === 'ADMIN' ? '/dashboard' : '/inicio' });
   } catch (error) {

@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Church, CalendarDays, BookOpen, CalendarHeart, Bell, ArrowRight } from 'lucide-react';
@@ -6,6 +7,7 @@ import { getRecords, isUpcoming } from '@/lib/records';
 import { today, formatDate } from '@/lib/dates';
 import { PageHeader, EmptyState } from '@/components/page-parts';
 import { RecordCard } from '@/components/record-card';
+import { HomeReading, HomeReadingFallback } from '@/components/home-reading';
 export default async function Home({
   searchParams,
 }: {
@@ -78,18 +80,9 @@ export default async function Home({
             <p className="eyebrow !mb-0">Palavra do dia</p>
           </div>
           <h2 className="mb-2.5 text-xl sm:mb-3">Leitura em destaque</h2>
-          {reading ? (
-            <>
-              <p className="font-medium">{reading.reference}</p>
-              <p className="mt-3 line-clamp-4 text-sm leading-6 text-muted-foreground">
-                {reading.content}
-              </p>
-            </>
-          ) : (
-            <p className="text-sm leading-6 text-muted-foreground">
-              As leituras de hoje ainda não foram publicadas. Consulte as datas disponíveis.
-            </p>
-          )}
+          <Suspense fallback={<HomeReadingFallback />}>
+            <HomeReading reading={reading} date={today()} />
+          </Suspense>
           <Link
             href="/leituras"
             className="text-link mt-4 inline-flex min-h-11 items-center sm:mt-5"

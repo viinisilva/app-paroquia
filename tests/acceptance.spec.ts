@@ -32,7 +32,7 @@ async function cleanupAcceptanceRecords(pool: Pool) {
   );
   const keys = users.rows.flatMap(({ email }) => [
     tokenHash(`email:${email.toLowerCase()}`),
-    tokenHash(`login:${email.toLowerCase()}`),
+    tokenHash(`email-ip:${email.toLowerCase()}:local`),
   ]);
   if (keys.length)
     await pool.query('delete from auth_attempts where key = any($1::varchar[])', [keys]);

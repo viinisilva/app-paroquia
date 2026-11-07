@@ -16,8 +16,9 @@ async function main() {
     const sessions = await pool.query('delete from sessions where user_id = any($1::uuid[])', [
       demoIds.users,
     ]);
+    // A chave por e-mail+IP depende do IP do executor e expira sozinha em 15 minutos.
     const attempts = await pool.query('delete from auth_attempts where key = $1', [
-      tokenHash(`login:${memberEmail}`),
+      tokenHash(`email:${memberEmail}`),
     ]);
     await pool.query('commit');
 

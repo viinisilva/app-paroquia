@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { BookOpen, ExternalLink } from 'lucide-react';
 import { requireUser } from '@/lib/auth';
@@ -5,6 +6,7 @@ import { getRecords } from '@/lib/records';
 import { today, readingLabels, formatDate } from '@/lib/dates';
 import { dateSchema } from '@/lib/validation';
 import { getCnbbLiturgy } from '@/lib/cnbb-liturgy';
+import type { RecordRow } from '@/lib/resources';
 import { PageHeader, EmptyState } from '@/components/page-parts';
 import { Button } from '@/components/ui/button';
 export default async function ReadingsPage({
@@ -15,7 +17,7 @@ export default async function ReadingsPage({
   const user = await requireUser();
   const query = await searchParams;
   const date = dateSchema.safeParse(query.date).success ? query.date! : today();
-  const [all, officialLiturgy] = await Promise.all([getRecords('leituras'), getCnbbLiturgy(date)]);
+  const all = await getRecords('leituras');
   const rows = all
     .filter((r) => r.date === date)
     .sort(
@@ -71,6 +73,25 @@ export default async function ReadingsPage({
         )}
       </div>
 
+      <Suspense key={date} fallback={<ReadingsFallback />}>
+        <ReadingsContent date={date} rows={rows} isAdmin={user.role === 'ADMIN'} />
+      </Suspense>
+    </>
+  );
+}
+// A consulta à CNBB pode levar até 10 s; o cabeçalho e o filtro aparecem antes dela.
+async function ReadingsContent({
+  date,
+  rows,
+  isAdmin,
+}: {
+  date: string;
+  rows: RecordRow[];
+  isAdmin: boolean;
+}) {
+  const officialLiturgy = await getCnbbLiturgy(date);
+  return (
+    <>
       {officialLiturgy ? (
         <article
           aria-labelledby="official-liturgy-title"
@@ -162,7 +183,7 @@ export default async function ReadingsPage({
                 <p className="mt-5 break-words text-xs text-muted-foreground sm:mt-6">
                   Fonte: {row.source}
                 </p>
-                {user.role === 'ADMIN' && (
+                {isAdmin && (
                   <Link
                     href={'/leituras/' + row.id}
                     className="text-link mt-4 inline-block text-sm"
@@ -182,5 +203,19 @@ export default async function ReadingsPage({
         />
       )}
     </>
+  );
+}
+function ReadingsFallback() {
+  return (
+    <div
+      role="status"
+      aria-label="Carregando a liturgia do dia"
+      className="mx-auto max-w-4xl space-y-3 rounded-xl border bg-card px-4 py-5 sm:px-8 sm:py-7"
+    >
+      <div className="h-4 w-40 animate-pulse rounded bg-secondary" />
+      <div className="h-7 w-3/4 animate-pulse rounded bg-secondary" />
+      <div className="h-4 w-full animate-pulse rounded bg-secondary" />
+      <div className="h-4 w-5/6 animate-pulse rounded bg-secondary" />
+    </div>
   );
 }
